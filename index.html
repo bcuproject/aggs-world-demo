@@ -304,6 +304,17 @@ canvas#game{width:100%;aspect-ratio:3/2;border-radius:18px;display:block;touch-a
 .gquiz .qtimer i{display:block;height:100%;background:var(--gold);width:100%}
 .gquiz .qres{min-height:24px;font-weight:700}
 @media(max-width:700px){.gquiz{inset:auto 8px 8px 8px;top:96px;padding:16px;gap:10px}.gquiz .qopts{grid-template-columns:1fr}.gquiz .qopts button{min-height:48px;font-size:15px;padding:10px 12px}}
+#gExit{display:inline-flex;align-items:center;gap:6px;border-color:#e85a30;color:#ff8a6b}
+.tabbar,.nav,.chat-fab{transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .3s}
+@media(max-width:700px){
+  body.playing{overflow:hidden}
+  body.playing .tabbar{transform:translateY(120%)!important}
+  body.playing .nav{transform:translateY(-160%);opacity:0;pointer-events:none}
+  body.playing .chat-fab,body.playing .chat,body.playing .demo-bar{display:none}
+  body.playing .game-shell{position:fixed;inset:0;z-index:110;border-radius:0;border:0;margin:0;padding:calc(8px + env(safe-area-inset-top)) 8px calc(8px + env(safe-area-inset-bottom));display:flex;flex-direction:column;justify-content:center;background:var(--bg)}
+  body.playing canvas#game{width:auto;max-width:100%;max-height:calc(100dvh - 140px);margin:0 auto}
+  html.in-frame body.playing .game-shell{padding-top:44px;padding-bottom:24px}
+}
 .howto{width:100%;max-width:560px;display:grid;gap:12px}
 .ht-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .ht-steps div{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:10px;text-align:left}
@@ -765,7 +776,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between}
               <span class="hud" id="gLives" aria-label="Lives">♥♥♥</span>
               <span class="hud">Combo <b id="gCombo">×1</b></span>
               <div class="meter" aria-label="Pot progress"><i id="gMeter"></i></div>
-              <button class="mini-btn" id="gHelp" aria-label="How to play">?</button><button class="mini-btn" id="gPause">Pause</button><button class="mini-btn" id="gSfx" aria-pressed="true" aria-label="Sound effects on">SFX on</button><button class="mini-btn" id="gMusic" aria-pressed="true" aria-label="Music on">Music on</button>
+              <button class="mini-btn" id="gExit" aria-label="Exit game" hidden><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>Exit</button><button class="mini-btn" id="gHelp" aria-label="How to play">?</button><button class="mini-btn" id="gPause">Pause</button><button class="mini-btn" id="gSfx" aria-pressed="true" aria-label="Sound effects on">SFX on</button><button class="mini-btn" id="gMusic" aria-pressed="true" aria-label="Music on">Music on</button>
             </div>
             <canvas id="game" width="900" height="600" tabindex="0" aria-label="Jollof Rush game. Move with mouse, touch or arrow keys."></canvas>
             <div class="gquiz" id="gQuiz" hidden role="dialog" aria-label="Bonus question">
@@ -788,7 +799,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between}
                 <p style="font-size:13px;margin:0">Catch in a row to build a <b style="color:var(--gold)">combo</b> (up to ×5 points). Miss one and it resets. You have 3 lives, and a <b style="color:#ff4d6d">heart</b> drops now and then to win one back. Catch a <b style="color:var(--gold)">?</b> for a bonus question: answer right for extra points! From level 2, <b style="color:#ff8a6b">never catch a bomb</b>: it blows up the pot and ends the game.</p>
               </div>
               <div id="ovName" hidden style="display:none;gap:8px;flex-wrap:wrap;justify-content:center"><label class="sr" for="pName">Your name</label><input id="pName" maxlength="14" placeholder="Your name"><button class="btn btn-grad" id="saveScore">Save score</button></div>
-              <button class="btn btn-grad" id="gStart">Play Jollof Rush</button>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button class="btn btn-grad" id="gStart">Play Jollof Rush</button><button class="btn btn-ghost" id="gQuit" hidden style="background:transparent;color:#fff;border-color:rgba(255,255,255,.35)">Quit game</button></div>
             </div>
           </div>
           <div class="card trivia">
@@ -1091,7 +1102,8 @@ function route(forced){
   if(p==='news'&&!inited.news){inited.news=1;loadNews();loadFx();}
   if(p==='play'&&!inited.play){inited.play=1;initGame();initTrivia();}
   if(p==='videos'){initStory();}else{stopStory();}
-  if(p!=='play'&&window.game&&game.running)pauseGame(true);
+  if(p!=='play'&&window.game&&game.running){pauseGame(true);game.setPlaying&&game.setPlaying(false);$('#gExit').hidden=false}
+  if(p==='play'&&window.game&&game.running&&game.paused&&!game.quiz&&$('#gOverlay').hidden)setTimeout(()=>game.showPause('Paused','Welcome back! Your game is waiting.'),50);
   observe();
 }
 addEventListener('hashchange',()=>{if(hashRoute()!==curRoute)route()});
@@ -1599,10 +1611,10 @@ function initGame(){
     ctx.restore();
     if(flash>0){ctx.fillStyle=`rgba(255,${200-flash*60|0},120,${flash*.85})`;ctx.fillRect(-20,-20,W+40,H+40)}
     ctx.restore()}
-  function over(reason){G.running=false;G.boom=false;Snd.stopMusic();if(reason!=='bomb')Snd.play('over');const best=store.get('best',0);const nb=score>best;if(nb)store.set('best',score);$('#best').textContent=Math.max(best,score);
+  function over(reason){G.running=false;G.setPlaying(false);requestAnimationFrame(()=>$('.game-shell').scrollIntoView({block:'center'}));G.boom=false;Snd.stopMusic();if(reason!=='bomb')Snd.play('over');const best=store.get('best',0);const nb=score>best;if(nb)store.set('best',score);$('#best').textContent=Math.max(best,score);
     $('#ovTitle').textContent=reason==='bomb'?(nb?'BOOM! But that\u2019s a new best!':'BOOM! Your pot exploded'):(nb?'New personal best!':'Pot overflowed!');$('#ovText').textContent=`You scored ${score} and reached level ${level}.${nb?' Add your name to the leaderboard.':''}`;
     $('#howto').hidden=true;$('#ovText').hidden=false;$('#ovName').hidden=false;$('#ovName').style.display='flex';$('#gStart').textContent='Play again';$('#gOverlay').hidden=false;G.lastScore=score;if(nb)confetti($('.game-shell'));setTimeout(()=>$('#pName').focus(),50)}
-  function start(){reset();cv.scrollIntoView({block:'center',behavior:reduced?'auto':'smooth'});Snd.init();Snd.play('start');Snd.setTempo(1);if(Snd.st.music)Snd.startMusic();$('#gOverlay').hidden=true;$('#ovName').hidden=true;$('#ovName').style.display='none';G.running=true;G.paused=false;$('#gPause').textContent='Pause';last=0;cv.focus({preventScroll:true});requestAnimationFrame(loop)}
+  function start(){reset();G.setPlaying(true);$('#gQuit').hidden=true;cv.scrollIntoView({block:'center',behavior:reduced?'auto':'smooth'});Snd.init();Snd.play('start');Snd.setTempo(1);if(Snd.st.music)Snd.startMusic();$('#gOverlay').hidden=true;$('#ovName').hidden=true;$('#ovName').style.display='none';G.running=true;G.paused=false;$('#gPause').textContent='Pause';last=0;cv.focus({preventScroll:true});requestAnimationFrame(loop)}
   // ---- bonus question when a ? lands in the pot ----
   function openQuiz(){
     const pool=QUIZ.map((q,i)=>i).filter(i=>!asked.has(i));if(!pool.length)asked.clear();
@@ -1622,6 +1634,13 @@ function initGame(){
     $('#qOpts').onclick=e=>{const b=e.target.closest('button');if(b)answer(+b.dataset.i)};
     const key=e=>{const n=+e.key;if(n>=1&&n<=4){e.preventDefault();answer(order[n-1])}};document.addEventListener('keydown',key);
   }
+  // ---- focused game mode: hide menus while a game is in progress ----
+  G.setPlaying=on=>{document.body.classList.toggle('playing',on);$('#gExit').hidden=!on;if(!on)$('#gQuit').hidden=true};
+  G.showPause=(title,text)=>{if(!G.running)return;if(!G.paused)pauseGame(true);G.help=true;$('#ovTitle').textContent=title;$('#ovText').textContent=text;$('#ovText').hidden=false;$('#howto').hidden=true;$('#ovName').hidden=true;$('#ovName').style.display='none';$('#gStart').textContent='Resume';$('#gQuit').hidden=false;$('#gOverlay').hidden=false;G.setPlaying(true)};
+  G.quit=()=>{G.running=false;G.paused=false;G.help=false;Snd.stopMusic();cancelAnimationFrame(qTimer);G.quiz=false;$('#gQuiz').hidden=true;reset();draw(performance.now());G.setPlaying(false);
+    $('#ovTitle').textContent='Ready to cook?';$('#ovText').textContent='Cook the perfect pot of jollof by catching the right ingredients as they fall.';$('#howto').hidden=false;$('#gStart').textContent='Play Jollof Rush';$('#gQuit').hidden=true;$('#gOverlay').hidden=false;$('#gPause').textContent='Pause';requestAnimationFrame(()=>$('.game-shell').scrollIntoView({block:'center'}));toast('Game ended')};
+  $('#gExit').onclick=()=>G.showPause('Leave the game?',`You have ${score} points on level ${level}. Quit and this score won\u2019t be saved.`);
+  $('#gQuit').onclick=()=>G.quit();
   G.start=start;
   G.test={setLives(v){lives=v;hud()},drop(t){items.push({t,x:pot.x,y:-30,r:24,vy:220,vx:0,rot:0,vr:0})}}; // used for automated testing
   const toCanvas=cx=>{const r=cv.getBoundingClientRect();return(cx-r.left)/r.width*W};
@@ -1629,8 +1648,8 @@ function initGame(){
   cv.addEventListener('pointerdown',e=>{pot.tx=toCanvas(e.clientX);cv.setPointerCapture(e.pointerId)});
   cv.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight'].includes(e.key)){keys[e.key]=true;e.preventDefault()}if(e.key===' '||e.key==='p'){e.preventDefault();pauseGame()}});
   cv.addEventListener('keyup',e=>{keys[e.key]=false});
-  $('#gStart').onclick=()=>{if(G.help){G.help=false;$('#gOverlay').hidden=true;if(G.running){pauseGame();cv.focus({preventScroll:true})}else start();return}start()};
-  $('#gHelp').onclick=()=>{if(G.running&&!G.paused)pauseGame(true);G.help=true;$('#ovTitle').textContent='How to play';$('#ovText').textContent='Cook the perfect pot of jollof by catching the right ingredients as they fall.';$('#howto').hidden=false;$('#ovName').hidden=true;$('#ovName').style.display='none';$('#gStart').textContent=G.running?'Resume game':'Play Jollof Rush';$('#gOverlay').hidden=false};$('#gPause').onclick=()=>pauseGame();
+  $('#gStart').onclick=()=>{if(G.help){G.help=false;$('#gOverlay').hidden=true;$('#gQuit').hidden=true;if(G.running){pauseGame();cv.focus({preventScroll:true})}else start();return}start()};
+  $('#gHelp').onclick=()=>{if(G.running&&!G.paused)pauseGame(true);G.help=true;$('#ovTitle').textContent='How to play';$('#ovText').textContent='Cook the perfect pot of jollof by catching the right ingredients as they fall.';$('#howto').hidden=false;$('#ovName').hidden=true;$('#ovName').style.display='none';$('#gStart').textContent=G.running?'Resume game':'Play Jollof Rush';$('#gQuit').hidden=!G.running;$('#gOverlay').hidden=false};$('#gPause').onclick=()=>{if(window.game.paused&&!$('#gOverlay').hidden)return $('#gStart').click();G.showPause('Paused',`Score ${score} · Level ${level}. Take a breather.`)};
   $('#saveScore').onclick=()=>{const n=$('#pName').value.trim()||'Guest';const b=store.get('board',[])||[];b.push({n,s:G.lastScore||0});b.sort((a,c)=>c.s-a.s);store.set('board',b.slice(0,8));renderBoard();$('#ovName').hidden=true;$('#ovName').style.display='none';toast('Score saved')};
   $('#shareScore').onclick=async()=>{const t=`I scored ${store.get('best',0)} in Jollof Rush at A.G.G's! Can you beat me? 🍛 aggsworld.co.uk`;try{if(navigator.share)await navigator.share({text:t});else{await navigator.clipboard.writeText(t);toast('Copied, now paste it anywhere')}}catch(e){}};
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&G.running)pauseGame(true)});
