@@ -1167,7 +1167,7 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
 <div class="toast" id="toast" role="status"></div>
 
 <script>
-const APP_VERSION='v7',APP_UPDATED='19 Nov 2026, 21:32';
+const APP_VERSION='v8',APP_UPDATED='19 Nov 2026, 21:44';
 try{if(new URLSearchParams(location.search).has('frame'))document.documentElement.classList.add('in-frame')}catch(e){}
 /* =====================================================================
    EDIT ME: content you can change without touching the rest of the code
@@ -1317,6 +1317,7 @@ function route(forced){
   if(p==='play'&&!inited.play){inited.play=1;initGame();initTrivia();}
   if(p==='menu')initMenuPage();
   if(p==='favourites')renderFavs();
+  setTimeout(syncScroll,0);
   if(p==='videos'){initVideosPage();initStory();}else{stopStory();}
   if(p!=='play'&&window.game&&game.running){pauseGame(true);game.setPlaying&&game.setPlaying(false);$('#gExit').hidden=false}
   if(p==='play'&&window.game&&game.running&&game.paused&&!game.quiz&&$('#gOverlay').hidden)setTimeout(()=>game.showPause('Paused','Welcome back! Your game is waiting.'),50);
@@ -1537,6 +1538,10 @@ document.querySelector('[data-page="favourites"]').addEventListener('click',e=>{
   const r=e.target.closest('[data-reorder]');if(r){const o=store.get('orders',[])[+r.dataset.reorder];if(!o)return;o.items.forEach(x=>{const k=x.custom?'custom:'+x.sub.split(' + ').join('|'):x.dish;if(!cart[k])cart[k]={qty:0,name:x.name,sub:x.sub,dish:x.dish,custom:x.custom,price:x.price};cart[k].qty+=x.qty});store.set('cart',cart);renderCart();Snd.ui('add',count());Snd.ui('milestone');toast('Your order is back in the basket. Same again, chef!');openOrder();return}
   const row=e.target.closest('[data-open]');if(row)openDish(row.dataset.open)});
 
+/* One place decides whether the page behind an overlay may scroll */
+function syncScroll(){const lock=$('#orderModal').classList.contains('on')||!$('#dishSheet').hidden||$('#lightbox').classList.contains('on');
+  document.documentElement.style.overflow=lock?'hidden':'';document.body.style.overflow=lock?'hidden':''}
+addEventListener('pageshow',syncScroll);
 /* ===== Big dish view ===== */
 const PAIRS={'Soup Dishes':['poundo','eba','amala'],'Rice Menu':['dodo','chapman','moimoi'],'Stew Dishes':['whiterice','dodo','zobo'],'Starter':['chapman','zobo','jollof'],'Special Dishes':['malt','chapman','dodo'],'Beans Menu':['dodo','zobo','puffpuff'],'Yam Dishes':['dodo','chapman','egusi'],'Extras':['egusi','efo','ogbono'],'Drinks':['jollof','suya','puffpuff']};
 const HEATL=['No heat','Mild','Medium','Hot!'];
@@ -1549,13 +1554,13 @@ function openDish(id){
   $('#dsName').textContent=d.name;$('#dsPrice').textContent=d.price||'';$('#dsDesc').textContent=d.desc;
   $('#dsPair').innerHTML=(PAIRS[d.cat]||[]).filter(x=>x!==id).map(dishById).filter(Boolean).map(p=>`<button data-pair="${p.id}"><span class="mini">${dishSVG(p,{steam:false})}</span>${p.name}<small>${p.price}</small></button>`).join('');
   dsSync();const sh=$('#dishSheet');sh.hidden=false;$('#sheetBox').style.transform='';$('#sheetBox').scrollTop=0;
-  if(first)document.documentElement.style.overflow='hidden';
+  syncScroll();
   setTimeout(()=>$('#dsAdd').focus({preventScroll:true}),60);
 }
 function dsSync(){const d=dishById(dsId);$('#dsQty').textContent=dsQ;$('#dsAdd').textContent=`Add ${dsQ>1?dsQ+' ':''}· ${gbp(d.priceNum*dsQ)}`;$('#dsMinus').disabled=dsQ<=1;
   const inB=cart[dsId]?.qty||0;$('#dsInBasket').textContent=inB?`Already in your basket: ${inB}`:''}
 function closeDish(){const sh=$('#dishSheet');if(sh.hidden)return;
-  const box=$('#sheetBox'),done=()=>{sh.hidden=true;box.style.transform='';box.style.transition='';if(!$('#orderModal').classList.contains('on'))document.documentElement.style.overflow='';dsFocus&&dsFocus.focus&&dsFocus.focus({preventScroll:true})};
+  const box=$('#sheetBox'),done=()=>{sh.hidden=true;box.style.transform='';box.style.transition='';syncScroll();dsFocus&&dsFocus.focus&&dsFocus.focus({preventScroll:true})};
   if(reduced)return done();box.style.transition='transform .25s ease-in,opacity .25s';box.style.transform=matchMedia('(max-width:700px)').matches?'translateY(100%)':'scale(.94)';box.style.opacity='0';setTimeout(()=>{box.style.opacity='';done()},230)}
 $('#dsHeart').onclick=e=>toggleFav(dsId,e.currentTarget);
 $('#dsPlus').onclick=()=>{dsQ=Math.min(20,dsQ+1);dsSync();$('#dsQty').animate([{transform:'scale(1)'},{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:220})};
@@ -1570,8 +1575,8 @@ $('#dishSheet').addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropag
   box.addEventListener('touchmove',e=>{if(y0===null)return;dy=Math.max(0,e.touches[0].clientY-y0);if(dy>0)box.style.transform=`translateY(${dy}px)`},{passive:true});
   box.addEventListener('touchend',()=>{if(y0===null)return;y0=null;box.style.transition='transform .25s';if(dy>110)closeDish();else box.style.transform=''})})();
 let lastFocus;
-function openOrder(){lastFocus=document.activeElement;document.body.classList.add('modal-open');$('#orderModal').classList.add('on');document.body.style.overflow='hidden';goStep(1);renderMList();renderReorder();try{document.activeElement&&document.activeElement.blur()}catch(e){}setTimeout(()=>{const x=$('#orderModal .m-head [data-close]');x&&x.focus({preventScroll:true})},50)}
-function closeOrder(){document.body.classList.remove('modal-open');$('#orderModal').classList.remove('on');document.body.style.overflow='';lastFocus&&lastFocus.focus()}
+function openOrder(){lastFocus=document.activeElement;document.body.classList.add('modal-open');$('#orderModal').classList.add('on');syncScroll();goStep(1);renderMList();renderReorder();try{document.activeElement&&document.activeElement.blur()}catch(e){}setTimeout(()=>{const x=$('#orderModal .m-head [data-close]');x&&x.focus({preventScroll:true})},50)}
+function closeOrder(){document.body.classList.remove('modal-open');$('#orderModal').classList.remove('on');syncScroll();lastFocus&&lastFocus.focus()}
 document.addEventListener('click',e=>{if(e.target.closest('[data-order]'))openOrder();if(e.target.closest('#orderModal [data-close]'))closeOrder()});
 $('#orderModal').addEventListener('keydown',e=>{if(e.key==='Escape')closeOrder()});
 $('#basketToggle').onclick=()=>$('#mBasket').classList.toggle('open');
@@ -2112,15 +2117,15 @@ if(reduced)setTimeout(()=>setPaused(true),0);
 const vg=['linear-gradient(160deg,#f2b33d,#e85a30)','linear-gradient(160deg,#0f5b33,#1f8a4c)','linear-gradient(160deg,#fff1cc,#ffd9c2)','linear-gradient(160deg,#1a1512,#3a2418)','linear-gradient(160deg,#dff5e8,#fff1cc)','linear-gradient(160deg,#2a231d,#5a2a14)'];
 let vidInit=false;function initVideosPage(){if(vidInit)return;vidInit=true;$('#vidGrid').innerHTML=VIDEOS.map((v,i)=>`<button class="card vid" data-vid="${i}"><div class="thumb" style="background:${vg[i%vg.length]}"><div class="art">${dishSVG(dishById(v.dish))}</div><span class="play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0d0c0b" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span><span class="len">${v.len}</span></div><div class="vbody"><h4>${esc(v.title)}</h4><p>${esc(v.sub)}</p></div></button>`).join('');watchAnim($('#vidGrid'))}
 $('#vidGrid').onclick=e=>{const b=e.target.closest('[data-vid]');if(!b)return;const v=VIDEOS[+b.dataset.vid];
-  if(v.type==='youtube'&&v.id){$('#lbHost').innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.id)}?autoplay=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen title="${esc(v.title)}"></iframe>`;$('#lightbox').classList.add('on');setPaused(true)}
-  else if(v.type==='mp4'&&v.src){$('#lbHost').innerHTML=`<video src="${esc(v.src)}" controls autoplay playsinline></video>`;$('#lightbox').classList.add('on');setPaused(true)}
+  if(v.type==='youtube'&&v.id){$('#lbHost').innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.id)}?autoplay=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen title="${esc(v.title)}"></iframe>`;$('#lightbox').classList.add('on');syncScroll();setPaused(true)}
+  else if(v.type==='mp4'&&v.src){$('#lbHost').innerHTML=`<video src="${esc(v.src)}" controls autoplay playsinline></video>`;$('#lightbox').classList.add('on');syncScroll();setPaused(true)}
   else{ // DEMO clip: animated preview until a real video is added
     const d=dishById(v.dish),lines=[v.title,v.sub,'Only at A.G.G\u2019s · Coventry & Leicester'];
     $('#lbHost').innerHTML=`<div class="demo-vid" role="img" aria-label="Demo clip: ${esc(v.title)}"><span class="dv-tag">DEMO CLIP · ${v.len}</span>${Array.from({length:14},(_,i)=>`<span class="spark" style="left:${(i*37)%100}%;top:${(i*53)%80+5}%;animation-delay:${(i*.3).toFixed(1)}s"></span>`).join('')}<div class="dv-art">${dishSVG(d)}</div><div class="dv-cap"><div class="dv-line" id="dvLine"><div style="font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)">Highlights</div><h3>${esc(lines[0])}</h3></div></div><div class="dv-bar"><i></i></div></div>`;
-    $('#lightbox').classList.add('on');setPaused(true);let k=0;clearInterval(window.dvT);
+    $('#lightbox').classList.add('on');syncScroll();setPaused(true);let k=0;clearInterval(window.dvT);
     window.dvT=setInterval(()=>{k++;const el=$('#dvLine');if(!el||k>2){clearInterval(window.dvT);return}el.outerHTML=`<div class="dv-line" id="dvLine"><div style="font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)">Highlights</div><h3>${esc(lines[k])}</h3></div>`},4000);
   }};
-const closeLb=()=>{$('#lightbox').classList.remove('on');$('#lbHost').innerHTML=''};
+const closeLb=()=>{$('#lightbox').classList.remove('on');$('#lbHost').innerHTML='';syncScroll()};
 $('#lbClose').onclick=closeLb;$('#lightbox').onclick=e=>{if(e.target.id==='lightbox')closeLb()};$('#lightbox').addEventListener('keydown',e=>{if(e.key==='Escape')closeLb()});
 
 /* =====================================================================
