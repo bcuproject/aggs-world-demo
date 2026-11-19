@@ -492,6 +492,17 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between}
 .chips{max-width:100%}
 body.modal-open .toast{top:auto;bottom:28px;transform:translate(-50%,160px)}
 body.modal-open .toast.on{transform:translate(-50%,0)}
+.offscreen,.offscreen *{animation-play-state:paused!important}
+.mini *,.mini{animation:none!important}
+@media(max-width:700px),(prefers-reduced-data:reduce){#menuGrid .bob,#menuGrid .ripple,.vid .bob{animation:none}}
+button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.add,.plus,.qty button,.chip,.opt,.mini-btn,.icon-btn,.tabbar a,.tabbar button,.btn{transition:transform .12s ease,background-color .2s,color .2s,box-shadow .2s}
+.add:active,.plus:active,.qty button:active,.chip:active,.opt:active,.mini-btn:active,.icon-btn:active,.tabbar a:active,.tabbar button:active{transform:scale(.92)}
+.qty .q{display:inline-block;min-width:18px;text-align:center}
+.line{overflow:hidden}
+#menuGrid,#newsGrid{contain:layout style}
+.tabbar .tob{transition:transform .12s}
+.tabbar button:active .tob{transform:scale(.9)}
 .tabbar{display:none}
 .demo-bar .short{display:none}
 @media(max-width:700px){
@@ -1038,6 +1049,10 @@ const store={get(k,d){try{return JSON.parse(localStorage.getItem('agg-'+k))??d}c
 const reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),1900)}
 const dishById=id=>DISHES.find(d=>d.id===id);
+// Pause SVG/CSS animations that are scrolled out of view (big win for phones)
+const animIO='IntersectionObserver' in window?new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('offscreen',!e.isIntersecting)),{rootMargin:'120px'}):null;
+const watched=new WeakSet();
+function watchAnim(root=document){if(!animIO)return;root.querySelectorAll('.dish .art,.hero-plates>div,.tile .art-r,.dotd .art,.result .art,#builderArt,.vid .thumb,.nart,#heroPlates').forEach(el=>{if(!watched.has(el)){watched.add(el);animIO.observe(el)}})}
 
 /* =====================================================================
    DISH ART
@@ -1127,7 +1142,7 @@ $('#demoHide').onclick=()=>$('#demoBar').hidden=true;
 $('#themeBtn').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
 // reveal + progress
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.1});
-function observe(){$$('.page.active .reveal:not(.in)').forEach(el=>io.observe(el))}
+function observe(){watchAnim(document.querySelector('.page.active')||document);$$('.page.active .reveal:not(.in)').forEach(el=>io.observe(el))}
 addEventListener('scroll',()=>{const h=document.documentElement;$('#progress').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100||0)+'%'},{passive:true});
 
 /* =====================================================================
@@ -1168,13 +1183,19 @@ $('#menuChips').innerHTML=CATS.map(c=>`<button class="chip" data-c="${c}" aria-p
 $('#menuChips').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;ms.cat=b.dataset.c;$$('#menuChips .chip').forEach(x=>x.setAttribute('aria-pressed',x===b));renderMenu()};
 const HL=['No heat','Mild','Medium','Bring the fire'];
 $('#heat').oninput=e=>{ms.heat=+e.target.value;$('#heatOut').textContent=HL[ms.heat];renderMenu()};
-$('#menuQ').oninput=e=>{ms.q=e.target.value.toLowerCase().trim();renderMenu()};
-function renderMenu(){
-  const list=DISHES.filter(d=>(ms.cat==='All'||d.cat===ms.cat)&&d.heat<=ms.heat&&(!ms.q||(d.name+d.desc+d.cat).toLowerCase().includes(ms.q)));
-  $('#menuGrid').innerHTML=list.length?list.map(d=>`<article class="card dish">${d.star?'<span class="tag">House favourite</span>':''}<div class="art">${dishSVG(d)}</div><h3>${d.name}</h3><p>${d.desc}</p>
-   <div class="dish-foot"><div class="chili" aria-label="Heat ${d.heat} of 3">${[1,2,3].map(i=>CHILI(i<=d.heat)).join('')}</div>${d.price?`<span class="price">${d.price}</span>`:''}<button class="add" data-add="${d.id}" aria-label="Add ${esc(d.name)} to order"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Add</span></button></div></article>`).join('')
-   :`<div class="empty">No dishes match. Try turning up the heat dial or clearing the search.</div>`;
+const debounce=(f,ms=120)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>f(...a),ms)}};
+$('#menuQ').oninput=debounce(e=>{ms.q=e.target.value.toLowerCase().trim();renderMenu()});
+let menuBuilt=false;
+function buildMenu(){
+  $('#menuGrid').innerHTML=DISHES.map(d=>`<article class="card dish" data-id="${d.id}">${d.star?'<span class="tag">House favourite</span>':''}<div class="art">${dishSVG(d)}</div><h3>${d.name}</h3><p>${d.desc}</p>
+   <div class="dish-foot"><div class="chili" aria-label="Heat ${d.heat} of 3">${[1,2,3].map(i=>CHILI(i<=d.heat)).join('')}</div>${d.price?`<span class="price">${d.price}</span>`:''}<button class="add" data-add="${d.id}" aria-label="Add ${esc(d.name)} to order"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Add</span></button></div></article>`).join('')+`<div class="empty" id="menuEmpty" hidden>No dishes match. Try turning up the heat dial or clearing the search.</div>`;
   if(!reduced&&matchMedia('(hover:hover)').matches)$$('#menuGrid .dish').forEach(c=>{c.onmousemove=e=>{const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;c.style.transform=`perspective(900px) rotateY(${x*8}deg) rotateX(${-y*8}deg) translateY(-4px)`};c.onmouseleave=()=>c.style.transform=''});
+  menuBuilt=true;watchAnim($('#menuGrid'));
+}
+function renderMenu(){
+  if(!menuBuilt)buildMenu();let shown=0;
+  $$('#menuGrid .dish').forEach(el=>{const d=dishById(el.dataset.id);const ok=(ms.cat==='All'||d.cat===ms.cat)&&d.heat<=ms.heat&&(!ms.q||(d.name+d.desc+d.cat).toLowerCase().includes(ms.q));if(el.hidden===ok){el.hidden=!ok;if(ok&&!reduced)el.animate([{opacity:0,transform:'scale(.96)'},{opacity:1,transform:'none'}],{duration:220,easing:'ease-out'})}if(ok)shown++});
+  $('#menuEmpty').hidden=shown>0;
 }
 $('#menuGrid').onclick=e=>{const b=e.target.closest('[data-add]');if(b)addToCart(b.dataset.add,b)};
 renderMenu();
@@ -1249,24 +1270,40 @@ function addToCart(id,el,custom){try{navigator.vibrate&&navigator.vibrate(12)}ca
 const count=()=>Object.values(cart).reduce((s,c)=>s+c.qty,0);
 const unit=c=>c.price??(dishById(c.dish)?.priceNum||PLATE_PRICE);
 function totals(){const sub=Object.values(cart).reduce((s,c)=>s+unit(c)*c.qty,0);const{min}=londonNow();const lunch=sub>0&&min>=720&&min<900?1:0;return{sub,lunch,total:Math.max(0,sub-lunch)}}
+function lineEl(k,c){const d=dishById(c.dish)||DISHES[3],el=document.createElement('div');el.className='line';el.dataset.k=k;
+  el.innerHTML=`<div class="mini">${dishSVG(d,{steam:false})}</div><div class="nm">${esc(c.name)}<small>${esc(c.sub)} · <span class="lp">${gbp(unit(c)*c.qty)}</span></small></div><div class="qty"><button data-dec="${esc(k)}" aria-label="One less ${esc(c.name)}">−</button><span class="q" aria-live="polite">${c.qty}</span><button data-inc="${esc(k)}" aria-label="One more ${esc(c.name)}">+</button></div>`;return el}
 function renderCart(){
-  $('#navCount').textContent=count();$('#tabCount').textContent=count();$('#tabCount').hidden=!count();$('#bCount').textContent=count();
-  const keys=Object.keys(cart);
-  $('#mLines').innerHTML=keys.length?keys.map(k=>{const c=cart[k],d=dishById(c.dish)||DISHES[3];return`<div class="line"><div class="mini">${dishSVG(d,{steam:false})}</div><div class="nm">${esc(c.name)}<small>${esc(c.sub)} · ${gbp(unit(c)*c.qty)}</small></div><div class="qty"><button data-dec="${esc(k)}" aria-label="One less ${esc(c.name)}">−</button><span>${c.qty}</span><button data-inc="${esc(k)}" aria-label="One more ${esc(c.name)}">+</button></div></div>`}).join('')
-   :`<p style="color:var(--ink2);text-align:center;padding:40px 10px">Your basket is empty.<br>Tap <b>+</b> on any dish to add it.</p>`;
+  const n=count();$('#navCount').textContent=n;$('#tabCount').textContent=n;$('#tabCount').hidden=!n;$('#bCount').textContent=n;
+  const host=$('#mLines'),keys=Object.keys(cart);
+  let empty=host.querySelector('.basket-empty');
+  if(!keys.length){host.querySelectorAll('.line').forEach(x=>x.remove());if(!empty){host.insertAdjacentHTML('beforeend','<p class="basket-empty" style="color:var(--ink2);text-align:center;padding:40px 10px">Your basket is empty.<br>Tap <b>+</b> on any dish to add it.</p>')}}
+  else{if(empty)empty.remove();
+    const existing={};host.querySelectorAll('.line').forEach(x=>existing[x.dataset.k]=x);
+    Object.entries(existing).forEach(([k,el])=>{if(!cart[k]&&!el.dataset.leaving){el.dataset.leaving=1;if(reduced)return el.remove();const h=el.offsetHeight;el.animate([{opacity:1,height:h+'px',transform:'none'},{opacity:0,height:'0px',paddingTop:'0px',paddingBottom:'0px',transform:'translateX(30px)'}],{duration:260,easing:'ease-in'}).onfinish=()=>el.remove()}});
+    keys.forEach(k=>{const c=cart[k];let el=existing[k];
+      if(!el||el.dataset.leaving){el=lineEl(k,c);host.appendChild(el);if(!reduced)el.animate([{opacity:0,transform:'translateY(-8px)'},{opacity:1,transform:'none'}],{duration:240,easing:'ease-out'})}
+      else{const q=el.querySelector('.q');if(q.textContent!=String(c.qty)){q.textContent=c.qty;el.querySelector('.lp').textContent=gbp(unit(c)*c.qty);if(!reduced)q.animate([{transform:'scale(1)'},{transform:'scale(1.45)'},{transform:'scale(1)'}],{duration:240})}}})}
   $('#toDetails').disabled=!keys.length;$('#toDetails').style.opacity=keys.length?1:.5;
-  const T=totals();$('#mTotals').innerHTML=keys.length?`<div class="tot"><span>Subtotal</span><span>${gbp(T.sub)}</span></div>${T.lunch?`<div class="tot" style="color:var(--green)"><span>Lunch deal (12–3pm)</span><span>−${gbp(T.lunch)}</span></div>`:''}<div class="tot big"><span>Total</span><span>${gbp(T.total)}</span></div>`:'';
+  const T=totals(),tot=$('#mTotals'),html=keys.length?`<div class="tot"><span>Subtotal</span><span>${gbp(T.sub)}</span></div>${T.lunch?`<div class="tot" style="color:var(--green)"><span>Lunch deal (12–3pm)</span><span>−${gbp(T.lunch)}</span></div>`:''}<div class="tot big"><span>Total</span><span>${gbp(T.total)}</span></div>`:'';
+  if(tot.innerHTML!==html)tot.innerHTML=html;
   $('#toDetails').textContent=keys.length?`Continue · ${gbp(T.total)}`:'Continue';
 }
 $('#mLines').onclick=e=>{const i=e.target.closest('[data-inc]'),d=e.target.closest('[data-dec]');if(i){cart[i.dataset.inc].qty++;Snd.ui('add',count())}if(d){const k=d.dataset.dec,nm=cart[k].name;if(--cart[k].qty<=0){delete cart[k];Snd.ui('remove');toast(`${nm} removed. Ah, you no like am again?`)}else Snd.ui('remove')}if(i||d){store.set('cart',cart);renderCart()}};
 const mState={cat:'All',q:''};
 $('#mChips').innerHTML=CATS.map(c=>`<button class="chip" data-c="${c}" aria-pressed="${c==='All'}">${c}</button>`).join('');
 $('#mChips').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;mState.cat=b.dataset.c;$$('#mChips .chip').forEach(x=>x.setAttribute('aria-pressed',x===b));renderMList()};
-$('#mQ').oninput=e=>{mState.q=e.target.value.toLowerCase();renderMList()};
+$('#mQ').oninput=debounce(e=>{mState.q=e.target.value.toLowerCase().trim();renderMList()});
+let mBuilt=false;
+function buildMList(){
+  $('#mList').innerHTML=CATS.slice(1).map(c=>`<section data-cat="${c}"><h4 class="m-cat">${c}</h4>`+DISHES.filter(d=>d.cat===c).map(d=>`<div class="row" data-id="${d.id}"><div class="mini">${dishSVG(d,{steam:false})}</div><div class="nm"><b>${d.name}${d.price?` · ${d.price}`:''}</b><small>${d.desc}</small></div><div class="chili" aria-label="Heat ${d.heat} of 3">${[1,2,3].map(i=>CHILI(i<=d.heat)).join('')}</div><button class="plus" data-madd="${d.id}" aria-label="Add ${esc(d.name)}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>`).join('')+'</section>').join('')+'<p class="empty" id="mEmpty" hidden>Nothing matches that search.</p>';
+  mBuilt=true;
+}
 function renderMList(){
-  let html='';CATS.slice(1).forEach(c=>{if(mState.cat!=='All'&&mState.cat!==c)return;const items=DISHES.filter(d=>d.cat===c&&(!mState.q||(d.name+d.desc).toLowerCase().includes(mState.q)));if(!items.length)return;
-    html+=`<h4 class="m-cat">${c}</h4>`+items.map(d=>`<div class="row"><div class="mini">${dishSVG(d,{steam:false})}</div><div class="nm"><b>${d.name}${d.price?` · ${d.price}`:''}</b><small>${d.desc}</small></div><div class="chili" aria-label="Heat ${d.heat} of 3">${[1,2,3].map(i=>CHILI(i<=d.heat)).join('')}</div><button class="plus" data-madd="${d.id}" aria-label="Add ${esc(d.name)}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>`).join('')});
-  $('#mList').innerHTML=html||'<p class="empty">Nothing matches that search.</p>';
+  if(!mBuilt)buildMList();let any=0;
+  $$('#mList section').forEach(sec=>{let vis=0;const catOk=mState.cat==='All'||mState.cat===sec.dataset.cat;
+    sec.querySelectorAll('.row').forEach(r=>{const d=dishById(r.dataset.id),ok=catOk&&(!mState.q||(d.name+d.desc).toLowerCase().includes(mState.q));r.hidden=!ok;if(ok)vis++});
+    sec.hidden=!vis;any+=vis});
+  $('#mEmpty').hidden=any>0;
 }
 $('#mList').onclick=e=>{const b=e.target.closest('[data-madd]');if(b){addToCart(b.dataset.madd,b);b.animate([{transform:'scale(1)'},{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:300})}};
 let lastFocus;
@@ -1362,7 +1399,7 @@ const FALLBACK=[ // headlines current when this page was built, shown only if th
 let news=[],nState={topic:'All',q:''},saved=store.get('saved',{});
 $('#newsChips').innerHTML=NTOPICS.map(t=>`<button class="chip" data-t="${t}" aria-pressed="${t==='All'}">${t}</button>`).join('');
 $('#newsChips').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;nState.topic=b.dataset.t;$$('#newsChips .chip').forEach(x=>x.setAttribute('aria-pressed',x===b));renderNews()};
-$('#newsQ').oninput=e=>{nState.q=e.target.value.toLowerCase();renderNews()};
+$('#newsQ').oninput=debounce(e=>{nState.q=e.target.value.toLowerCase();renderNews()},180);
 $('#newsRefresh').onclick=()=>loadNews(true);
 const strip=h=>{const d=document.createElement('div');d.innerHTML=h||'';return(d.textContent||'').replace(/\s+/g,' ').trim()};
 const topicOf=t=>{for(const[k,v]of Object.entries(TOPICS))if(v.k.test(t))return k;return'General'};
@@ -1411,7 +1448,7 @@ function newsImg(n){return newsArt(n)+(n.img?`<img class="nphoto" src="${esc(n.i
 const phColor=s=>({'Premium Times':'linear-gradient(135deg,#0f5b33,#1f8a4c)','Punch':'linear-gradient(135deg,#ff6a2b,#ffb21e)','Vanguard':'linear-gradient(135deg,#0f9d58,#7bd389)'}[s]||'var(--grad)');
 function storyActs(n,i){return`<div class="story-acts"><button class="mini-btn" data-listen="${i}" aria-label="Listen to this headline"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/></svg>Listen</button><button class="mini-btn" data-save="${i}" aria-pressed="${!!saved[n.link]}">${saved[n.link]?'Saved':'Save'}</button><button class="mini-btn" data-share="${i}">Share</button></div>`}
 let shown=[];
-function renderNews(){
+function renderNews(){setTimeout(()=>watchAnim($('[data-page="news"]')),0);
   let list=nState.topic==='Saved'?Object.values(saved):news.filter(n=>nState.topic==='All'||n.topic===nState.topic);
   if(nState.q)list=list.filter(n=>(n.title+n.desc).toLowerCase().includes(nState.q));
   shown=list;
