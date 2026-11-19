@@ -1,6 +1,7 @@
 # A.G.G's Restaurant & Bar — interactive demo website
 
 Live demo: https://bcuproject.github.io/aggs-world-demo/
+Mobile preview (phone frame + QR code): https://bcuproject.github.io/aggs-world-demo/mobile.html
 
 A single-page demo site for A.G.G's (African Nigerian cuisine, Coventry & Leicester).
 
@@ -11,6 +12,7 @@ A single-page demo site for A.G.G's (African Nigerian cuisine, Coventry & Leices
 - **Jollof Rush** arcade game with synthesised sound effects and music, plus a food trivia quiz and leaderboard
 - **Our Story** animated story player and highlight clips
 - **Chat assistant** for hours, locations, prices, order tracking and WhatsApp hand-off
+- **Mobile-first**: app-style bottom tab bar, two-column menu, portrait game, swipeable story, haptics, installable to the home screen (web app manifest + icons)
 - Live open/closed status and countdown, dark/light mode
 
 ## Demo data
