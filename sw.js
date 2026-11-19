@@ -1,16 +1,18 @@
 // A.G.G's demo: makes repeat visits load instantly and keeps the site usable on a weak signal.
 // Pages: network first (always the latest version), cached copy if offline.
 // Fonts, icons and other files: served from cache straight away, refreshed in the background.
-const CACHE = 'aggs-v8';
+const CACHE = 'aggs-v9';
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', 'index.html', 'manifest.webmanifest', 'icon-192.png'])).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
+self.addEventListener('message', e => { if (e.data === 'skip') self.skipWaiting(); });
 self.addEventListener('fetch', e => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== 'GET') return;
+  if (url.pathname.endsWith('version.json')) return; // always ask the server for the latest version number
   const isPage = req.mode === 'navigate' || (url.origin === location.origin && url.pathname.endsWith('.html'));
   const isStatic = url.origin === location.origin || /fonts\.(googleapis|gstatic)\.com$/.test(url.hostname);
   if (isPage) {

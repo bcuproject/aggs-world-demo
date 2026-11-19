@@ -597,6 +597,13 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
 .tabbar a svg path{fill:none}
 .tabbar a[aria-current] svg path{fill:currentColor;fill-opacity:.25}
 @media(max-width:700px){.fav-row .mini{width:52px;height:52px}.fav-row{gap:10px}.fav-h h2{font-size:21px}.dish .heart-btn{width:34px;height:34px;top:6px;right:6px}.dish .heart-btn svg{width:17px;height:17px}}
+.link-btn{all:unset;cursor:pointer;color:var(--gold);font-size:12px;font-weight:700;text-decoration:underline;margin-left:6px}
+.upd{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:250;width:min(560px,calc(100% - 24px));background:var(--card);border:1px solid var(--gold);border-radius:20px;box-shadow:var(--shadow-lg);padding:14px 16px;display:flex;align-items:center;gap:12px;animation:updIn .45s cubic-bezier(.2,1.3,.4,1)}
+@keyframes updIn{from{transform:translate(-50%,140%)}}
+.upd-ic{width:42px;height:42px;border-radius:12px;background:var(--gold);color:#14110f;display:grid;place-items:center;flex:none}
+.upd-tx{flex:1;min-width:0}.upd-tx b{display:block}.upd-tx small{color:var(--ink2);display:block;line-height:1.35}
+.upd-btns{display:flex;gap:8px;flex:none}
+@media(max-width:700px){.upd{bottom:calc(86px + env(safe-area-inset-bottom));flex-wrap:wrap}.upd-btns{width:100%}.upd-btns .btn{flex:1}body.playing .upd{bottom:16px}}
 .game-title{display:none}
 @media(max-width:700px){
   body.playing .game-title{display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 0 10px;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:26px;letter-spacing:-.02em;color:var(--ink)}
@@ -1065,7 +1072,7 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
 </nav>
 <footer>
   <div class="wrap">
-    <div><a class="logo" href="#/"><span class="logo-mark">AGG</span>A.G.G's Restaurant &amp; Bar</a><p style="margin:10px 0 0">African Nigerian cuisine · <a href="mailto:info@aggsworld.co.uk">info@aggsworld.co.uk</a><br>Allergies? Please speak to our team before ordering.<br><small class="ver-long" style="opacity:.7"></small></p></div>
+    <div><a class="logo" href="#/"><span class="logo-mark">AGG</span>A.G.G's Restaurant &amp; Bar</a><p style="margin:10px 0 0">African Nigerian cuisine · <a href="mailto:info@aggsworld.co.uk">info@aggsworld.co.uk</a><br>Allergies? Please speak to our team before ordering.<br><small class="ver-long" style="opacity:.7"></small> <button class="link-btn" id="checkUpd">Check for updates</button></p></div>
     <div class="socials">
       <a href="https://www.instagram.com/a.g.g.restaurant" target="_blank" rel="noopener" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg></a>
       <a href="https://www.facebook.com/1437421896516558" target="_blank" rel="noopener" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h-2.5A3.5 3.5 0 0 0 9 6.5V10H6v4h3v7h4v-7h3l1-4h-4V7a1 1 0 0 1 1-1h2z"/></svg></a>
@@ -1165,9 +1172,14 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
 
 <div class="lightbox" id="lightbox" role="dialog" aria-label="Video"><button class="icon-btn" id="lbClose" aria-label="Close video"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div id="lbHost"></div></div>
 <div class="toast" id="toast" role="status"></div>
+<div class="upd" id="updBar" role="alertdialog" aria-labelledby="updTitle" hidden>
+  <div class="upd-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></div>
+  <div class="upd-tx"><b id="updTitle">Update available</b><small id="updNotes"></small></div>
+  <div class="upd-btns"><button class="btn btn-grad btn-sm" id="updNow">Update now</button><button class="btn btn-ghost btn-sm" id="updLater">Later</button></div>
+</div>
 
 <script>
-const APP_VERSION='v8',APP_UPDATED='19 Nov 2026, 21:44';
+const APP_VERSION='v9',APP_UPDATED='19 Nov 2026, 21:50';
 try{if(new URLSearchParams(location.search).has('frame'))document.documentElement.classList.add('in-frame')}catch(e){}
 /* =====================================================================
    EDIT ME: content you can change without touching the rest of the code
@@ -2175,6 +2187,28 @@ log.addEventListener('click',e=>{const b=e.target.closest('[data-chatadd]');if(b
 setTimeout(()=>{if(!chatStarted)$('.chat-fab').animate([{transform:'scale(1)'},{transform:'scale(1.15)'},{transform:'scale(1)'}],{duration:600,iterations:2})},6000);
 
 /* go */
+/* ===== Update checker: compares this page's version with version.json on the server ===== */
+const Upd=(()=>{let shown=null,busy=false;const canCheck=/^https?:$/.test(location.protocol);
+  async function check(manual){if(!canCheck||busy)return;busy=true;
+    try{const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw 0;const j=await r.json();
+      const skip=store.get('skipVer',null);
+      if(j.version&&j.version!==APP_VERSION&&(manual||skip!==j.version)){show(j)}else if(manual)toast(`You\u2019re on the latest version (${APP_VERSION})`)}
+    catch(e){if(manual)toast('Couldn\u2019t check for updates. Are you online?')}finally{busy=false}
+    try{const reg=await navigator.serviceWorker?.getRegistration();reg&&reg.update()}catch(e){}}
+  function show(j){if(shown===j.version)return;shown=j.version;$('#updTitle').textContent=`Update available: ${j.version}`;$('#updNotes').textContent=j.notes||'Fixes and new features.';$('#updBar').hidden=false}
+  async function apply(){$('#updNow').textContent='Updating…';$('#updNow').disabled=true;store.set('lastVer',APP_VERSION);
+    try{const keys=await caches.keys();await Promise.all(keys.map(k=>caches.delete(k)))}catch(e){}
+    try{const reg=await navigator.serviceWorker?.getRegistration();if(reg){await reg.update();reg.waiting&&reg.waiting.postMessage('skip')}}catch(e){}
+    const u=new URL(location.href);u.searchParams.set('v',Date.now());location.replace(u.toString())}
+  $('#updNow').onclick=apply;$('#updLater').onclick=()=>{$('#updBar').hidden=true;store.set('skipVer',shown)};
+  $('#checkUpd').onclick=()=>{store.set('skipVer',null);shown=null;check(true)};
+  // when to check: shortly after opening, on returning to the app, every 5 minutes, and when back online
+  setTimeout(()=>check(false),3000);setInterval(()=>check(false),5*60*1000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)check(false)});addEventListener('online',()=>check(false));
+  // confirm a completed update
+  const prev=store.get('lastVer',null);if(prev&&prev!==APP_VERSION){setTimeout(()=>toast(`Updated to ${APP_VERSION} \u2713`),900);store.set('skipVer',null)}store.set('lastVer',APP_VERSION);
+  try{if(new URL(location.href).searchParams.has('v')){const u=new URL(location.href);u.searchParams.delete('v');history.replaceState(null,'',u.pathname+u.search+u.hash)}}catch(e){}
+  return{check}})();
 $$('.ver').forEach(e=>e.textContent=APP_VERSION);$$('.ver-long').forEach(e=>e.textContent=`Version ${APP_VERSION} · updated ${APP_UPDATED}`);
 route();
 // Cache for instant repeat visits (only on the real https site, not in previews)

@@ -18,3 +18,10 @@ A single-page demo site for A.G.G's (African Nigerian cuisine, Coventry & Leices
 ## Demo data
 Prices, demo orders, highlight clips, leaderboard scores and the fallback exchange rate are **sample data** for demonstration.
 Edit the `PRICES`, `DISHES` and `VIDEOS` lists near the top of the `<script>` in `index.html` to use real content.
+
+## Releasing an update
+The installed app checks `version.json` for new releases (on open, when brought back to the foreground, every 5 minutes and when back online) and offers a one-tap update.
+When publishing a change, bump the version in **three** places so phones are told about it:
+1. `APP_VERSION` / `APP_UPDATED` at the top of the `<script>` in `index.html`
+2. `version` (and the one-line `notes`) in `version.json`
+3. `CACHE` in `sw.js`
