@@ -414,8 +414,24 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between}
 .m-steps span.on{background:var(--ink);color:var(--bg)}
 .m-body{flex:1;display:grid;grid-template-columns:1fr 360px;min-height:0}
 .m-menu{overflow:auto;padding:18px 20px}
-.m-menu .chips{flex:none;padding-bottom:12px}
-.m-cat{font-size:15px;color:var(--ink3);margin:18px 0 8px;text-transform:uppercase;letter-spacing:.06em}
+.m-menu .chips{flex:none;padding-bottom:4px}
+#mList section{padding:0}
+#mList section:first-child .m-cat{margin-top:8px}
+.m-tools{position:sticky;top:-18px;z-index:3;background:var(--bg);margin:0 -20px;padding:12px 20px 8px;display:grid;gap:10px;border-bottom:1px solid transparent}
+.m-tools .field-in{min-height:44px}
+.reorder-pill{display:flex;align-items:center;gap:10px;width:100%;border:1px solid var(--line);background:var(--card);border-radius:16px;padding:12px 14px;text-align:left;font-size:14px;color:var(--ink2);margin-bottom:10px;min-height:48px}
+.reorder-pill b{color:var(--ink)}
+.reorder-pill svg{color:var(--gold);flex:none}
+.reorder-pill span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.usual-h{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin:2px 0 8px}
+.usual-strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;margin:0 -20px 4px;padding-left:20px;padding-right:20px;scrollbar-width:none;scroll-snap-type:x mandatory;scroll-padding-left:20px}
+.usual-strip::-webkit-scrollbar{display:none}
+.usual{flex:none;width:112px;scroll-snap-align:start;position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px 10px 12px;display:flex;flex-direction:column;align-items:center;text-align:center;cursor:pointer}
+.usual .mini{width:56px;height:56px}
+.usual b{font-size:13px;line-height:1.2;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:31px}
+.usual small{color:var(--gold);font-weight:800;font-size:12.5px}
+.usual .plus{position:absolute;top:6px;right:6px;width:30px;height:30px}
+.m-cat{font-size:13px;color:var(--ink3);margin:16px 0 6px;text-transform:uppercase;letter-spacing:.06em}
 .row{display:flex;align-items:center;gap:14px;padding:10px;border-radius:18px;transition:background .2s}
 .row:hover{background:var(--card)}
 .row .mini{width:64px;height:64px;flex:none}
@@ -705,7 +721,15 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
   .loc-grid .panel{padding:20px}
   .countdown{font-size:40px}
   footer{padding-bottom:30px}
-  .m-head{padding:12px 14px;padding-top:calc(12px + env(safe-area-inset-top))}
+  .m-head{padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top));gap:8px}
+  .m-head .icon-btn{width:40px;height:40px}
+  .m-head select{min-height:40px;padding:6px 10px;font-size:14px;max-width:150px}
+  .m-menu{padding:0 14px 110px}
+  .m-tools{margin:0 -14px;padding:10px 14px 8px;top:0}
+  .usual-strip{margin:0 -14px 4px;padding-left:14px;padding-right:14px;scroll-padding-left:14px}
+  body.modal-open .toast{top:calc(64px + env(safe-area-inset-top))!important;bottom:auto!important;transform:translate(-50%,-200px)!important;font-size:13px;padding:9px 16px;max-width:calc(100% - 40px)}
+  body.modal-open .toast.on{transform:translate(-50%,0)!important}
+  .m-tools .chip{min-height:36px;padding:7px 13px;font-size:13px}
   .m-head h2{font-size:19px}
   .row{padding:8px 4px;gap:10px}.row .mini{width:52px;height:52px}.row .chili{display:none}
   .m-basket{padding-bottom:env(safe-area-inset-bottom)}
@@ -1065,8 +1089,10 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
     <div class="m-body" id="mStep1">
       <div class="m-menu">
         <div id="reorderBox"></div>
+        <div class="m-tools">
+        <label class="field-in"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span class="sr">Search</span><input id="mQ" type="search" placeholder="Search the menu…"></label>
         <div class="chips" id="mChips" role="group" aria-label="Category"></div>
-        <label class="field-in" style="margin-bottom:6px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span class="sr">Search</span><input id="mQ" type="search" placeholder="Search the menu…"></label>
+        </div>
         <div id="mList"></div>
       </div>
       <div class="m-basket" id="mBasket">
@@ -1543,7 +1569,7 @@ $('#dishSheet').addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropag
   box.addEventListener('touchmove',e=>{if(y0===null)return;dy=Math.max(0,e.touches[0].clientY-y0);if(dy>0)box.style.transform=`translateY(${dy}px)`},{passive:true});
   box.addEventListener('touchend',()=>{if(y0===null)return;y0=null;box.style.transition='transform .25s';if(dy>110)closeDish();else box.style.transform=''})})();
 let lastFocus;
-function openOrder(){lastFocus=document.activeElement;document.body.classList.add('modal-open');$('#orderModal').classList.add('on');document.body.style.overflow='hidden';goStep(1);renderMList();renderReorder();setTimeout(()=>$('#mQ').focus(),50)}
+function openOrder(){lastFocus=document.activeElement;document.body.classList.add('modal-open');$('#orderModal').classList.add('on');document.body.style.overflow='hidden';goStep(1);renderMList();renderReorder();if(matchMedia('(hover:hover) and (pointer:fine)').matches)setTimeout(()=>$('#mQ').focus({preventScroll:true}),50);else setTimeout(()=>$('#orderModal [data-close]').focus({preventScroll:true}),50)}
 function closeOrder(){document.body.classList.remove('modal-open');$('#orderModal').classList.remove('on');document.body.style.overflow='';lastFocus&&lastFocus.focus()}
 document.addEventListener('click',e=>{if(e.target.closest('[data-order]'))openOrder();if(e.target.closest('#orderModal [data-close]'))closeOrder()});
 $('#orderModal').addEventListener('keydown',e=>{if(e.key==='Escape')closeOrder()});
@@ -1591,8 +1617,18 @@ function renderTrack(){const o=store.get('order',null),st=stageOf(o);
   $('#track').innerHTML=STAGES.map(([a,b],i)=>`<div class="trk ${i<st||st===3?'done':i===st?'now':''}"><span class="b">${i<st||st===3?'✓':i+1}</span><div><b>${a}</b><small>${b}</small></div></div>`).join('');
   clearTimeout(trackTimer);if(st<3&&$('#orderModal').classList.contains('on'))trackTimer=setTimeout(renderTrack,1000);if(st===3)toast(`Order ${o.no} is ready!`)}
 $('#copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(orderText());toast('Order copied')}catch(e){toast('Copy not available here')}};
-function renderReorder(){const last=store.get('last',null);$('#reorderBox').innerHTML=last&&Object.keys(last).length?`<div class="card" style="padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:14px;box-shadow:none"><div style="flex:1"><b>Order again?</b><div class="note">${Object.values(last).map(c=>c.qty+' × '+esc(c.name)).join(', ')}</div></div><button class="btn btn-dark btn-sm" id="reorder">Reorder</button></div>`:'';
-  const b=$('#reorder');if(b)b.onclick=()=>{cart=JSON.parse(JSON.stringify(last));store.set('cart',cart);renderCart();toast('Last order added to basket')}}
+function renderReorder(){
+  const last=store.get('last',null),h=store.get('history',{});
+  const lastItems=last?Object.values(last).filter(c=>c.qty>0):[];
+  const usual=Object.entries(h).filter(([id])=>dishById(id)).sort((a,b)=>b[1].n-a[1].n||b[1].last-a[1].last).slice(0,8).map(([id])=>dishById(id));
+  let html='';
+  if(lastItems.length){const n=lastItems.reduce((a,c)=>a+c.qty,0),t=lastItems.reduce((a,c)=>a+unit(c)*c.qty,0);
+    html+=`<button class="reorder-pill" id="reorder"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg><span><b>Reorder last order</b> · ${n} item${n>1?'s':''} · ${gbp(t)}</span></button>`}
+  if(usual.length)html+=`<div class="usual-h">Your usuals</div><div class="usual-strip">${usual.map(d=>`<div class="usual" data-open="${d.id}"><span class="mini">${dishSVG(d,{steam:false})}</span><b>${d.name.replace(/ \(.*\)/,'')}</b><small>${d.price}</small><button class="plus" data-madd="${d.id}" aria-label="Add ${esc(d.name)}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>`).join('')}</div>`;
+  $('#reorderBox').innerHTML=html;
+  const b=$('#reorder');if(b)b.onclick=()=>{Object.entries(last).forEach(([k,c])=>{if(!cart[k])cart[k]={...c,qty:0};cart[k].qty+=c.qty});store.set('cart',cart);renderCart();Snd.ui('add',count());toast('Last order is back in the basket. Same again, chef!');if(matchMedia('(max-width:820px)').matches)$('#mBasket').classList.add('open')};
+}
+$('#reorderBox').addEventListener('click',e=>{const a=e.target.closest('[data-madd]');if(a){addToCart(a.dataset.madd,a);return}const u=e.target.closest('[data-open]');if(u)openDish(u.dataset.open)});
 $('#mLoc').onchange=()=>{store.set('loc',$('#mLoc').value)};
 renderCart();
 
