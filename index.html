@@ -503,6 +503,52 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
 #menuGrid,#newsGrid{contain:layout style}
 .tabbar .tob{transition:transform .12s}
 .tabbar button:active .tob{transform:scale(.9)}
+.sheet{position:fixed;inset:0;z-index:140;display:flex;align-items:center;justify-content:center;padding:20px}
+.sheet-scrim{position:absolute;inset:0;background:rgba(13,12,11,.55);backdrop-filter:blur(4px);animation:fadeIn .25s}
+.sheet-box{position:relative;width:min(900px,100%);max-height:min(640px,100%);overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow-lg);display:grid;grid-template-columns:1fr 1fr;animation:boxIn .38s cubic-bezier(.2,1.2,.4,1)}
+.sheet-x{position:absolute;top:14px;right:14px;z-index:2}
+.sheet-grab{display:none}
+.ds-art{position:relative;display:grid;place-items:center;padding:34px;background:radial-gradient(circle at 50% 45%,rgba(242,179,61,.22),transparent 65%),var(--bg2);min-height:300px}
+.ds-glow{position:absolute;width:70%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(232,90,48,.25),transparent 70%);animation:pulse2 3s ease-in-out infinite}
+@keyframes pulse2{50%{transform:scale(1.08);opacity:.7}}
+#dsArt{position:relative;width:min(340px,100%);animation:dsIn .7s cubic-bezier(.2,1.3,.4,1)}
+#dsArt .spin{animation-duration:30s}
+@keyframes dsIn{from{transform:scale(.4) rotate(-120deg);opacity:0}}
+.ds-fav{position:absolute;top:16px;left:16px;background:var(--red);color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px}
+.ds-body{padding:34px 30px 26px;display:flex;flex-direction:column;gap:10px}
+.ds-meta{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink3);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.ds-meta .chili svg{width:16px;height:16px}
+.ds-heat-l{text-transform:none;letter-spacing:0;font-weight:600}
+#dsName{font-size:clamp(28px,3.4vw,38px);padding-right:40px}
+.ds-price{font-size:22px;font-weight:800;color:var(--gold)}
+.ds-desc{color:var(--ink2);margin:0;font-size:16px}
+.ds-pair h4{font-size:13px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin:6px 0 8px}
+.ds-pairs{display:flex;flex-wrap:wrap;gap:8px}
+.ds-pairs button{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:4px 12px 4px 4px;font-weight:600;font-size:14px;min-height:42px}
+.ds-pairs button .mini{width:34px;height:34px}
+.ds-pairs button small{color:var(--ink3);font-weight:600}
+.ds-buy{display:flex;gap:12px;align-items:center;margin-top:auto;padding-top:10px}
+.ds-qty{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:5px}
+.ds-qty button{width:38px;height:38px;font-size:18px}
+.ds-qty span{min-width:26px;text-align:center;font-size:17px}
+#dsAdd{flex:1;min-height:52px;font-size:16px}
+.row{cursor:pointer}
+.row-open{all:unset;cursor:pointer;flex:1;min-width:0;display:block}
+.row-open:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:8px}
+.dish .art,.dish h3{cursor:pointer}
+.dish-open{all:unset;cursor:pointer}
+.dish-open:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:6px}
+@media(max-width:700px){
+  .sheet{align-items:flex-end;padding:0}
+  .sheet-box{grid-template-columns:1fr;border-radius:24px 24px 0 0;max-height:92dvh;width:100%;animation:sheetUp .38s cubic-bezier(.2,.9,.3,1);padding-bottom:env(safe-area-inset-bottom);border-bottom:0}
+  @keyframes sheetUp{from{transform:translateY(100%)}}
+  .sheet-grab{display:flex;justify-content:center;padding:10px 0 0;position:absolute;top:0;left:0;right:0;z-index:2;touch-action:none}
+  .sheet-grab i{width:44px;height:5px;border-radius:9px;background:var(--line2)}
+  .ds-art{min-height:0;padding:30px 20px 14px}
+  #dsArt{width:min(250px,70%)}
+  .ds-body{padding:16px 18px 18px}
+  .ds-buy{position:sticky;bottom:0;background:var(--card);padding:12px 0 4px}
+}
 .game-title{display:none}
 @media(max-width:700px){
   body.playing .game-title{display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 0 10px;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:26px;letter-spacing:-.02em;color:var(--ink)}
@@ -1009,6 +1055,28 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
   </div>
 </div>
 
+<!-- DISH DETAIL SHEET -->
+<div class="sheet" id="dishSheet" role="dialog" aria-modal="true" aria-labelledby="dsName" hidden>
+  <div class="sheet-scrim" data-sclose></div>
+  <div class="sheet-box" id="sheetBox">
+    <div class="sheet-grab" id="sheetGrab" aria-hidden="true"><i></i></div>
+    <button class="icon-btn sheet-x" data-sclose aria-label="Close dish"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="ds-art"><div class="ds-glow"></div><div id="dsArt"></div><span class="ds-fav" id="dsFav" hidden>House favourite</span></div>
+    <div class="ds-body">
+      <div class="ds-meta"><span class="ds-cat" id="dsCat"></span><span class="chili" id="dsHeat"></span><span class="ds-heat-l" id="dsHeatL"></span></div>
+      <h2 id="dsName"></h2>
+      <div class="ds-price" id="dsPrice"></div>
+      <p class="ds-desc" id="dsDesc"></p>
+      <div class="ds-pair"><h4>Goes well with</h4><div class="ds-pairs" id="dsPair"></div></div>
+      <div class="ds-buy">
+        <div class="qty ds-qty"><button id="dsMinus" aria-label="One less">−</button><span id="dsQty" aria-live="polite">1</span><button id="dsPlus" aria-label="One more">+</button></div>
+        <button class="btn btn-grad" id="dsAdd">Add</button>
+      </div>
+      <p class="note" id="dsInBasket"></p>
+    </div>
+  </div>
+</div>
+
 <!-- CHAT -->
 <button class="chat-fab" id="chatFab" aria-label="Chat with us" aria-expanded="false"><span class="ping"></span><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></button>
 <div class="card chat" id="chat" role="dialog" aria-label="Chat with A.G.G's">
@@ -1239,7 +1307,7 @@ const debounce=(f,ms=120)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()
 $('#menuQ').oninput=debounce(e=>{ms.q=e.target.value.toLowerCase().trim();renderMenu()});
 let menuBuilt=false;
 function buildMenu(){
-  $('#menuGrid').innerHTML=DISHES.map(d=>`<article class="card dish" data-id="${d.id}">${d.star?'<span class="tag">House favourite</span>':''}<div class="art">${dishSVG(d)}</div><h3>${d.name}</h3><p>${d.desc}</p>
+  $('#menuGrid').innerHTML=DISHES.map(d=>`<article class="card dish" data-id="${d.id}">${d.star?'<span class="tag">House favourite</span>':''}<div class="art">${dishSVG(d)}</div><h3><button class="dish-open" data-open="${d.id}">${d.name}</button></h3><p>${d.desc}</p>
    <div class="dish-foot"><div class="chili" aria-label="Heat ${d.heat} of 3">${[1,2,3].map(i=>CHILI(i<=d.heat)).join('')}</div>${d.price?`<span class="price">${d.price}</span>`:''}<button class="add" data-add="${d.id}" aria-label="Add ${esc(d.name)} to order"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Add</span></button></div></article>`).join('')+`<div class="empty" id="menuEmpty" hidden>No dishes match. Try turning up the heat dial or clearing the search.</div>`;
   if(!reduced&&matchMedia('(hover:hover)').matches)$$('#menuGrid .dish').forEach(c=>{c.onmousemove=e=>{const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;c.style.transform=`perspective(900px) rotateY(${x*8}deg) rotateX(${-y*8}deg) translateY(-4px)`};c.onmouseleave=()=>c.style.transform=''});
   menuBuilt=true;watchAnim($('#menuGrid'));
@@ -1249,7 +1317,7 @@ function renderMenu(){
   $$('#menuGrid .dish').forEach(el=>{const d=dishById(el.dataset.id);const ok=(ms.cat==='All'||d.cat===ms.cat)&&d.heat<=ms.heat&&(!ms.q||(d.name+d.desc+d.cat).toLowerCase().includes(ms.q));if(el.hidden===ok){el.hidden=!ok;if(ok&&!reduced)el.animate([{opacity:0,transform:'scale(.96)'},{opacity:1,transform:'none'}],{duration:220,easing:'ease-out'})}if(ok)shown++});
   $('#menuEmpty').hidden=shown>0;
 }
-$('#menuGrid').onclick=e=>{const b=e.target.closest('[data-add]');if(b)addToCart(b.dataset.add,b)};
+$('#menuGrid').onclick=e=>{const b=e.target.closest('[data-add]');if(b)return addToCart(b.dataset.add,b);const c=e.target.closest('.dish');if(c)openDish(c.dataset.id)};
 let menuInit=false;function initMenuPage(){if(menuInit)return;menuInit=true;renderMenu();renderPlate()}
 // builder
 const STEPS=[
@@ -1346,7 +1414,7 @@ $('#mChips').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;mState.c
 $('#mQ').oninput=debounce(e=>{mState.q=e.target.value.toLowerCase().trim();renderMList()});
 let mBuilt=false;
 function buildMList(){
-  $('#mList').innerHTML=CATS.slice(1).map(c=>`<section data-cat="${c}"><h4 class="m-cat">${c}</h4>`+DISHES.filter(d=>d.cat===c).map(d=>`<div class="row" data-id="${d.id}"><div class="mini">${dishSVG(d,{steam:false})}</div><div class="nm"><b>${d.name}${d.price?` · ${d.price}`:''}</b><small>${d.desc}</small></div><div class="chili" aria-label="Heat ${d.heat} of 3">${[1,2,3].map(i=>CHILI(i<=d.heat)).join('')}</div><button class="plus" data-madd="${d.id}" aria-label="Add ${esc(d.name)}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>`).join('')+'</section>').join('')+'<p class="empty" id="mEmpty" hidden>Nothing matches that search.</p>';
+  $('#mList').innerHTML=CATS.slice(1).map(c=>`<section data-cat="${c}"><h4 class="m-cat">${c}</h4>`+DISHES.filter(d=>d.cat===c).map(d=>`<div class="row" data-id="${d.id}"><div class="mini">${dishSVG(d,{steam:false})}</div><button class="nm row-open" data-open="${d.id}" aria-label="View ${esc(d.name)}"><b>${d.name}${d.price?` · ${d.price}`:''}</b><small>${d.desc}</small></button><div class="chili" aria-label="Heat ${d.heat} of 3">${[1,2,3].map(i=>CHILI(i<=d.heat)).join('')}</div><button class="plus" data-madd="${d.id}" aria-label="Add ${esc(d.name)}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>`).join('')+'</section>').join('')+'<p class="empty" id="mEmpty" hidden>Nothing matches that search.</p>';
   mBuilt=true;
 }
 function renderMList(){
@@ -1356,7 +1424,37 @@ function renderMList(){
     sec.hidden=!vis;any+=vis});
   $('#mEmpty').hidden=any>0;
 }
-$('#mList').onclick=e=>{const b=e.target.closest('[data-madd]');if(b){addToCart(b.dataset.madd,b);b.animate([{transform:'scale(1)'},{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:300})}};
+$('#mList').onclick=e=>{const b=e.target.closest('[data-madd]');if(!b){const r=e.target.closest('.row');if(r)openDish(r.dataset.id);return}if(b){addToCart(b.dataset.madd,b);b.animate([{transform:'scale(1)'},{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:300})}};
+/* ===== Big dish view ===== */
+const PAIRS={'Soup Dishes':['poundo','eba','amala'],'Rice Menu':['dodo','chapman','moimoi'],'Stew Dishes':['whiterice','dodo','zobo'],'Starter':['chapman','zobo','jollof'],'Special Dishes':['malt','chapman','dodo'],'Beans Menu':['dodo','zobo','puffpuff'],'Yam Dishes':['dodo','chapman','egusi'],'Extras':['egusi','efo','ogbono'],'Drinks':['jollof','suya','puffpuff']};
+const HEATL=['No heat','Mild','Medium','Hot!'];
+let dsId=null,dsQ=1,dsFocus=null;
+function openDish(id){
+  const d=dishById(id);if(!d)return;dsId=id;dsQ=1;const first=$('#dishSheet').hidden;if(first)dsFocus=document.activeElement;
+  $('#dsArt').innerHTML=dishSVG(d);$('#dsArt').style.animation='none';void $('#dsArt').offsetWidth;$('#dsArt').style.animation='';
+  $('#dsFav').hidden=!d.star;$('#dsCat').textContent=d.cat;$('#dsHeat').innerHTML=[1,2,3].map(i=>CHILI(i<=d.heat)).join('');$('#dsHeatL').textContent=HEATL[d.heat];
+  $('#dsName').textContent=d.name;$('#dsPrice').textContent=d.price||'';$('#dsDesc').textContent=d.desc;
+  $('#dsPair').innerHTML=(PAIRS[d.cat]||[]).filter(x=>x!==id).map(dishById).filter(Boolean).map(p=>`<button data-pair="${p.id}"><span class="mini">${dishSVG(p,{steam:false})}</span>${p.name}<small>${p.price}</small></button>`).join('');
+  dsSync();const sh=$('#dishSheet');sh.hidden=false;$('#sheetBox').style.transform='';$('#sheetBox').scrollTop=0;
+  if(first)document.documentElement.style.overflow='hidden';
+  setTimeout(()=>$('#dsAdd').focus({preventScroll:true}),60);
+}
+function dsSync(){const d=dishById(dsId);$('#dsQty').textContent=dsQ;$('#dsAdd').textContent=`Add ${dsQ>1?dsQ+' ':''}· ${gbp(d.priceNum*dsQ)}`;$('#dsMinus').disabled=dsQ<=1;
+  const inB=cart[dsId]?.qty||0;$('#dsInBasket').textContent=inB?`Already in your basket: ${inB}`:''}
+function closeDish(){const sh=$('#dishSheet');if(sh.hidden)return;
+  const box=$('#sheetBox'),done=()=>{sh.hidden=true;box.style.transform='';box.style.transition='';if(!$('#orderModal').classList.contains('on'))document.documentElement.style.overflow='';dsFocus&&dsFocus.focus&&dsFocus.focus({preventScroll:true})};
+  if(reduced)return done();box.style.transition='transform .25s ease-in,opacity .25s';box.style.transform=matchMedia('(max-width:700px)').matches?'translateY(100%)':'scale(.94)';box.style.opacity='0';setTimeout(()=>{box.style.opacity='';done()},230)}
+$('#dsPlus').onclick=()=>{dsQ=Math.min(20,dsQ+1);dsSync();$('#dsQty').animate([{transform:'scale(1)'},{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:220})};
+$('#dsMinus').onclick=()=>{dsQ=Math.max(1,dsQ-1);dsSync();$('#dsQty').animate([{transform:'scale(1)'},{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:220})};
+$('#dsAdd').onclick=e=>{const id=dsId,n=dsQ;addToCart(id,e.currentTarget);if(n>1){cart[id].qty+=n-1;store.set('cart',cart);renderCart();toast(`${n} × ${dishById(id).name} added. ${pick(LINES[id]||GENERIC)}`)}setTimeout(closeDish,260)};
+$('#dsPair').onclick=e=>{const b=e.target.closest('[data-pair]');if(b)openDish(b.dataset.pair)};
+$('#dishSheet').addEventListener('click',e=>{if(e.target.closest('[data-sclose]'))closeDish()});
+$('#dishSheet').addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();closeDish()}});
+// swipe down to close on phones
+(()=>{let y0=null,dy=0;const box=$('#sheetBox');
+  box.addEventListener('touchstart',e=>{if(box.scrollTop>0&&!e.target.closest('#sheetGrab'))return;y0=e.touches[0].clientY;dy=0;box.style.transition='none'},{passive:true});
+  box.addEventListener('touchmove',e=>{if(y0===null)return;dy=Math.max(0,e.touches[0].clientY-y0);if(dy>0)box.style.transform=`translateY(${dy}px)`},{passive:true});
+  box.addEventListener('touchend',()=>{if(y0===null)return;y0=null;box.style.transition='transform .25s';if(dy>110)closeDish();else box.style.transform=''})})();
 let lastFocus;
 function openOrder(){lastFocus=document.activeElement;document.body.classList.add('modal-open');$('#orderModal').classList.add('on');document.body.style.overflow='hidden';goStep(1);renderMList();renderReorder();setTimeout(()=>$('#mQ').focus(),50)}
 function closeOrder(){document.body.classList.remove('modal-open');$('#orderModal').classList.remove('on');document.body.style.overflow='';lastFocus&&lastFocus.focus()}
