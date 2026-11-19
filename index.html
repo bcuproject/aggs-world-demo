@@ -763,7 +763,7 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
 <body>
 <div class="progress" id="progress"></div>
 <div class="ankara" aria-hidden="true"></div>
-<div class="demo-bar" id="demoBar"><span>DEMO SITE<span class="long"> · prices, orders, videos and scores are sample data</span><span class="short"> · sample data</span></span><button id="demoHide">Hide</button></div>
+<div class="demo-bar" id="demoBar"><span>DEMO SITE<span class="long"> · prices, orders, videos and scores are sample data</span><span class="short"> · sample data</span> · <span class="ver"></span></span><button id="demoHide">Hide</button></div>
 
 <header class="nav">
   <div class="nav-inner">
@@ -1065,7 +1065,7 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
 </nav>
 <footer>
   <div class="wrap">
-    <div><a class="logo" href="#/"><span class="logo-mark">AGG</span>A.G.G's Restaurant &amp; Bar</a><p style="margin:10px 0 0">African Nigerian cuisine · <a href="mailto:info@aggsworld.co.uk">info@aggsworld.co.uk</a><br>Allergies? Please speak to our team before ordering.</p></div>
+    <div><a class="logo" href="#/"><span class="logo-mark">AGG</span>A.G.G's Restaurant &amp; Bar</a><p style="margin:10px 0 0">African Nigerian cuisine · <a href="mailto:info@aggsworld.co.uk">info@aggsworld.co.uk</a><br>Allergies? Please speak to our team before ordering.<br><small class="ver-long" style="opacity:.7"></small></p></div>
     <div class="socials">
       <a href="https://www.instagram.com/a.g.g.restaurant" target="_blank" rel="noopener" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg></a>
       <a href="https://www.facebook.com/1437421896516558" target="_blank" rel="noopener" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h-2.5A3.5 3.5 0 0 0 9 6.5V10H6v4h3v7h4v-7h3l1-4h-4V7a1 1 0 0 1 1-1h2z"/></svg></a>
@@ -1167,6 +1167,7 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
 <div class="toast" id="toast" role="status"></div>
 
 <script>
+const APP_VERSION='v7',APP_UPDATED='19 Nov 2026, 21:32';
 try{if(new URLSearchParams(location.search).has('frame'))document.documentElement.classList.add('in-frame')}catch(e){}
 /* =====================================================================
    EDIT ME: content you can change without touching the rest of the code
@@ -1569,7 +1570,7 @@ $('#dishSheet').addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropag
   box.addEventListener('touchmove',e=>{if(y0===null)return;dy=Math.max(0,e.touches[0].clientY-y0);if(dy>0)box.style.transform=`translateY(${dy}px)`},{passive:true});
   box.addEventListener('touchend',()=>{if(y0===null)return;y0=null;box.style.transition='transform .25s';if(dy>110)closeDish();else box.style.transform=''})})();
 let lastFocus;
-function openOrder(){lastFocus=document.activeElement;document.body.classList.add('modal-open');$('#orderModal').classList.add('on');document.body.style.overflow='hidden';goStep(1);renderMList();renderReorder();if(matchMedia('(hover:hover) and (pointer:fine)').matches)setTimeout(()=>$('#mQ').focus({preventScroll:true}),50);else setTimeout(()=>$('#orderModal [data-close]').focus({preventScroll:true}),50)}
+function openOrder(){lastFocus=document.activeElement;document.body.classList.add('modal-open');$('#orderModal').classList.add('on');document.body.style.overflow='hidden';goStep(1);renderMList();renderReorder();try{document.activeElement&&document.activeElement.blur()}catch(e){}setTimeout(()=>{const x=$('#orderModal .m-head [data-close]');x&&x.focus({preventScroll:true})},50)}
 function closeOrder(){document.body.classList.remove('modal-open');$('#orderModal').classList.remove('on');document.body.style.overflow='';lastFocus&&lastFocus.focus()}
 document.addEventListener('click',e=>{if(e.target.closest('[data-order]'))openOrder();if(e.target.closest('#orderModal [data-close]'))closeOrder()});
 $('#orderModal').addEventListener('keydown',e=>{if(e.key==='Escape')closeOrder()});
@@ -2169,6 +2170,7 @@ log.addEventListener('click',e=>{const b=e.target.closest('[data-chatadd]');if(b
 setTimeout(()=>{if(!chatStarted)$('.chat-fab').animate([{transform:'scale(1)'},{transform:'scale(1.15)'},{transform:'scale(1)'}],{duration:600,iterations:2})},6000);
 
 /* go */
+$$('.ver').forEach(e=>e.textContent=APP_VERSION);$$('.ver-long').forEach(e=>e.textContent=`Version ${APP_VERSION} · updated ${APP_UPDATED}`);
 route();
 // Cache for instant repeat visits (only on the real https site, not in previews)
 try{if('serviceWorker'in navigator&&location.protocol==='https:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}catch(e){}
