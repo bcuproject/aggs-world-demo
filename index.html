@@ -464,6 +464,27 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between}
 .trk b{display:block}.trk small{color:var(--ink3)}
 .note{font-size:12.5px;color:var(--ink3);margin:0}
 .m-details{padding:24px;overflow:auto;grid-column:1/-1;max-width:640px;margin:0 auto;width:100%}
+.soldout{font-size:12px;font-weight:800;color:var(--red);border:1px solid currentColor;border-radius:999px;padding:6px 10px}
+.plus[disabled]{opacity:.35;pointer-events:none}
+.ds-opts h4{font-size:13px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin:6px 0 8px}
+.ds-optlist{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.ds-optlist .opt{display:flex;flex-direction:column;align-items:flex-start;padding:8px 14px;min-height:46px}
+.ds-optlist .opt small{font-weight:600;color:var(--ink3);font-size:12px}
+.ds-optlist .opt[aria-checked="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.ds-optlist .opt[aria-checked="true"] small{color:inherit;opacity:.8}
+.ds-optlist .opt[disabled]{opacity:.4;text-decoration:line-through}
+.ds-allergy{margin-top:8px}
+.paychoice{border:0;padding:0;margin:4px 0 14px;display:grid;gap:8px}
+.paychoice legend{font-weight:700;font-size:14px;margin-bottom:6px}
+.payopt{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:16px;padding:12px 14px;cursor:pointer;background:var(--bg)}
+.payopt input{margin-top:4px;accent-color:var(--gold);width:18px;height:18px}
+.payopt b{display:block}.payopt small{color:var(--ink3)}
+.payopt:has(input:checked){border-color:var(--gold);box-shadow:0 0 0 3px rgba(242,179,61,.18)}
+.closed-warn{background:rgba(226,69,42,.12);border:1px solid rgba(226,69,42,.4);color:var(--ink);border-radius:14px;padding:10px 14px;margin:0 0 14px;font-weight:600;font-size:14px}
+.send-err{background:rgba(226,69,42,.12);border-radius:12px;padding:10px 14px;margin:0 0 14px;font-weight:600}
+.trk-act{display:grid;gap:8px;justify-items:center;text-align:center}
+.trk-act .btn{width:100%;max-width:340px;justify-content:center}
+.track-pill{display:flex;align-items:center;gap:10px;width:100%;border:1px solid var(--gold);background:rgba(242,179,61,.12);border-radius:16px;padding:12px 14px;margin:0 0 12px;font-weight:600;text-align:left}
 .receipt{background:var(--card);border:1px dashed var(--line2);border-radius:18px;padding:18px;white-space:pre-wrap;font-size:14px;margin:0 0 18px}
 .basket-toggle{display:none}
 @media(max-width:820px){
@@ -770,7 +791,7 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
 <body>
 <div class="progress" id="progress"></div>
 <div class="ankara" aria-hidden="true"></div>
-<div class="demo-bar" id="demoBar"><span>DEMO SITE<span class="long"> · prices, orders, videos and scores are sample data</span><span class="short"> · sample data</span> · <span class="ver"></span></span><button id="demoHide">Hide</button></div>
+<div class="demo-bar" id="demoBar"><span>LIVE ORDERING<span class="long"> · real menu, orders go to our kitchen · videos and news are previews</span><span class="short"> · orders go to our kitchen</span> · <span class="ver"></span></span><button id="demoHide">Hide</button></div>
 
 <header class="nav">
   <div class="nav-inner">
@@ -807,7 +828,7 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
         </div>
         <div class="float-chip" style="left:-3%;top:22%"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff6a2b" stroke-width="2.2" aria-hidden="true"><path d="M12 2c3 4 6 7 6 11a6 6 0 0 1-12 0c0-2 1-4 2-5 0 2 1 3 2 3 0-4 1-6 2-9z"/></svg></span><div>Smoky Party Jollof<small>Crowd favourite</small></div></div>
         <div class="float-chip" style="right:-3%;top:12%;animation-delay:-2s"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f9d58" stroke-width="2.2" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg></span><div>Market-fresh<small>Bought every morning</small></div></div>
-        <div class="float-chip" style="right:6%;bottom:-6%;animation-delay:-3.5s"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f2b33d" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div>£1 off lunch<small>Ask our team in store</small></div></div>
+        <div class="float-chip" style="right:6%;bottom:-6%;animation-delay:-3.5s"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f2b33d" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div>Pay by card<small>Secure SumUp checkout</small></div></div>
       </div>
     </div>
   </section>
@@ -877,15 +898,6 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
         <div class="heat"><label for="heat">Max heat</label><input id="heat" type="range" min="0" max="3" value="3"><output id="heatOut" for="heat">Bring the fire</output></div>
       </div>
       <div class="grid" id="menuGrid"></div>
-    </div>
-  </section>
-  <section style="padding-top:20px">
-    <div class="wrap">
-      <div class="head reveal"><div><span class="eyebrow"><i></i>Build Your Plate</span><h2 class="h-lg">Your combo, <span class="serif">plated live.</span></h2></div><p>Choose a base, a soup or stew, a protein and a side, and watch your plate come together.</p></div>
-      <div class="builder">
-        <div class="card builder-plate reveal"><div id="builderArt"></div><div class="sum" id="builderSum">Start by picking a base.</div><button class="btn btn-grad" id="builderAdd" style="width:100%" disabled>Add my plate to order</button></div>
-        <div id="builderSteps"></div>
-      </div>
     </div>
   </section>
 </div>
@@ -1088,8 +1100,6 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
   <div class="modal-box">
     <div class="m-head">
       <h2 id="mTitle">Order</h2><button class="icon-btn" id="uiSnd" aria-label="Ordering sounds on" aria-pressed="true" title="Ordering sounds"></button>
-      <label class="sr" for="mLoc">Branch</label>
-      <select id="mLoc"><option value="coventry">Coventry</option><option value="leicester">Leicester</option></select>
       <div class="m-steps"><span id="st1" class="on">1 · Choose</span><span id="st2">2 · Details</span><span id="st3">3 · Send</span></div>
       <button class="icon-btn" data-close aria-label="Close order"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
@@ -1106,33 +1116,42 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
         <button class="basket-toggle btn btn-dark" id="basketToggle" style="margin:14px 18px 0">View basket · <span id="bCount">0</span> items</button>
         <div style="padding:16px 18px 0"><h3 style="font-size:20px">Your basket</h3></div>
         <div class="m-lines" id="mLines"></div>
-        <div class="m-foot"><div id="mTotals"></div><button class="btn btn-grad" id="toDetails">Continue</button><p class="note">Demo prices. Pay on collection.</p></div>
+        <div class="m-foot"><div id="mTotals"></div><button class="btn btn-grad" id="toDetails">Continue</button><p class="note" id="mFootNote">Live menu prices. Pay by card or when you collect.</p></div>
       </div>
     </div>
     <div class="m-body" id="mStep2" hidden style="grid-template-columns:1fr">
       <div class="m-details">
-        <h3 style="font-size:26px;margin-bottom:16px">Pick-up details</h3>
-        <div class="fld"><label for="oName">Your name</label><input id="oName" autocomplete="name" placeholder="e.g. Tolu"></div>
-        <div class="fld"><label for="oPhone">Phone number</label><input id="oPhone" type="tel" autocomplete="tel" placeholder="So we can reach you"></div>
+        <h3 style="font-size:26px;margin-bottom:6px">Pick-up details</h3>
+        <p class="note" style="margin:0 0 16px">Collection from our Coventry kitchen. We'll WhatsApp you to confirm.</p>
+        <div class="closed-warn" id="closedWarn" hidden></div>
+        <div class="fld"><label for="oPhone">WhatsApp / mobile number <span style="color:var(--red)">*</span></label><input id="oPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="07…"></div>
+        <div class="fld"><label for="oName">Your name <small style="color:var(--ink3);font-weight:500">(optional)</small></label><input id="oName" autocomplete="name" placeholder="e.g. Tolu" maxlength="40"></div>
         <div class="fld"><label for="oTime">Pick-up time</label><select id="oTime"></select></div>
-        <div class="fld"><label for="oNote">Notes (allergies, extra pepper…)</label><textarea id="oNote" rows="3"></textarea></div>
+        <div class="fld"><label for="oNote">Notes (allergies, extra pepper…)</label><textarea id="oNote" rows="2" maxlength="150"></textarea></div>
+        <fieldset class="paychoice"><legend>How would you like to pay?</legend>
+          <label class="payopt"><input type="radio" name="pay" value="card" checked><span><b>Pay by card now</b><small>Secure SumUp card payment. The kitchen starts once it's paid.</small></span></label>
+          <label class="payopt"><input type="radio" name="pay" value="collection"><span><b>Pay on collection</b><small>Pay at the counter when you pick up.</small></span></label>
+        </fieldset>
+        <p class="note" id="oAllergy" style="margin:0 0 14px"></p>
         <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-ghost" id="back1">Back</button><button class="btn btn-grad" id="toSend">Review order</button></div>
       </div>
     </div>
     <div class="m-body" id="mStep3" hidden style="grid-template-columns:1fr">
       <div class="m-details">
-        <h3 style="font-size:26px;margin-bottom:6px">Ready to send</h3>
+        <h3 style="font-size:26px;margin-bottom:6px">Check and send</h3>
         <p style="color:var(--ink2);margin:0 0 16px" id="sendHint"></p>
         <pre class="receipt" id="receipt"></pre>
-        <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-ghost" id="back2">Back</button><button class="btn btn-grad" id="placeDemo">Place order</button><a class="btn btn-ghost" id="sendBtn" target="_blank" rel="noopener"></a><button class="btn btn-ghost" id="copyBtn">Copy</button></div>
+        <p class="send-err" id="sendErr" role="alert" hidden></p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-ghost" id="back2">Back</button><button class="btn btn-grad" id="placeOrder">Send order</button></div>
       </div>
     </div>
     <div class="m-body" id="mStep4" hidden style="grid-template-columns:1fr">
       <div class="m-details" style="text-align:left">
         <div id="confArt" style="width:150px;margin:0 auto 6px"></div>
-        <h3 style="font-size:30px;text-align:center">Order <span id="confNo" style="color:var(--gold)"></span> placed!</h3>
+        <h3 style="font-size:28px;text-align:center" id="confTitle">Order sent</h3>
         <p style="color:var(--ink2);margin:6px 0 0;text-align:center" id="confSub"></p>
         <div class="track" id="track"></div>
+        <div id="trackAct" style="margin:0 0 16px"></div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button class="btn btn-grad" data-close>Done</button><a class="btn btn-ghost" href="#/play" data-close>Play Jollof Rush while you wait</a></div>
       </div>
     </div>
@@ -1152,11 +1171,13 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
       <div class="ds-price" id="dsPrice"></div>
       <p class="ds-desc" id="dsDesc"></p>
       <div class="ds-pair"><h4>Goes well with</h4><div class="ds-pairs" id="dsPair"></div></div>
+      <div class="ds-opts" id="dsOptsWrap" hidden><h4>Choose one</h4><div class="ds-optlist" id="dsOpts" role="radiogroup" aria-label="Choose an option"></div></div>
       <div class="ds-buy">
         <div class="qty ds-qty"><button id="dsMinus" aria-label="One less">−</button><span id="dsQty" aria-live="polite">1</span><button id="dsPlus" aria-label="One more">+</button></div>
         <button class="btn btn-grad" id="dsAdd">Add</button>
       </div>
       <p class="note" id="dsInBasket"></p>
+      <p class="note ds-allergy" id="dsAllergy"></p>
     </div>
   </div>
 </div>
@@ -1179,7 +1200,7 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
 </div>
 
 <script>
-const APP_VERSION='v9',APP_UPDATED='19 Nov 2026, 21:50';
+const APP_VERSION='v10',APP_UPDATED='19 Nov 2026, 23:30';
 try{if(new URLSearchParams(location.search).has('frame'))document.documentElement.classList.add('in-frame')}catch(e){}
 /* =====================================================================
    EDIT ME: content you can change without touching the rest of the code
@@ -1217,12 +1238,96 @@ const DISHES = [
  {id:'zobo',cat:'Drinks',name:'Zobo',heat:0,tags:['light'],desc:'Chilled hibiscus drink spiced with ginger and pineapple.',art:{kind:'cup',base:'#7a1238'}},
  {id:'malt',cat:'Drinks',name:'Malt Drink',heat:0,tags:['light'],desc:'Rich, sweet, ice-cold malt. The classic pairing for jollof.',art:{kind:'cup',base:'#3a1a0c'}},
 ];
-// DEMO PRICES (sample figures for the demo; replace with real prices)
-const PRICES={gizzard:6.5,suya:7.5,puffpuff:4,jollof:12.5,ebere:13,ofada:15,whiterice:11,egusi:14.5,efo:14,okra:13,ogbono:13.5,goatpepper:12,catfish:14,moimoi:4.5,agoyin:9.5,beansdodo:9,asun:13.5,nkwobi:15,isiewu:16,panla:14.5,chickenstew:12,poundo:4.5,asaro:10,dundun:9.5,dodo:4,eba:3.5,amala:4,chapman:5,zobo:3.5,malt:2.5};
 const gbp=n=>'£'+(+n).toFixed(2);
-DISHES.forEach(d=>{d.priceNum=PRICES[d.id];d.price=gbp(d.priceNum)});
-const PLATE_PRICE=13.5;
-const CATS=['All','Starter','Rice Menu','Soup Dishes','Beans Menu','Special Dishes','Stew Dishes','Yam Dishes','Extras','Drinks'];
+/* ===== LIVE MENU: Aggs World order service (blackcabunite backend) =====
+   The illustrated demo dishes above become an artwork library; the real menu, prices, options and
+   sold-out list come from the live service. Prices are re-checked by the server on every order. */
+const AGGS_API='https://kmgfujpoltysmlxwbpaj.supabase.co/functions/v1/aggs-web';
+const AGGS_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttZ2Z1anBvbHR5c21seHdicGFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxOTY0NTIsImV4cCI6MjA5Mjc3MjQ1Mn0.O5gUtpP4T9N2HDSrqP73Zy_5fVOjmCkYsI9k9iljx_M'; // public (anon) key
+const AGGS_HDR={apikey:AGGS_KEY,Authorization:'Bearer '+AGGS_KEY};
+const ART_DISHES=DISHES.splice(0); // keep the illustrations; DISHES is refilled with the real menu below
+const MENU_SNAPSHOT=[{"name":"Battered King Prawn","category":"Starters","pence":499},{"name":"Moin Moin","category":"Starters","pence":350},{"name":"Puff Puff","category":"Starters","pence":199},{"name":"Samosa","category":"Starters","sizes":{"Beef":499,"Chicken":499,"Vegetable":499}},{"name":"Spring Roll","category":"Starters","sizes":{"Beef":499,"Chicken":499,"Vegetable":499}},{"name":"Snail","category":"Starters","pence":2999},{"name":"Suya","category":"Starters","sizes":{"Beef":999,"Chicken":999,"Goat Meat":999}},{"name":"Meatpie (Small)","category":"Starters","pence":199},{"name":"Meatpie (Big)","category":"Starters","pence":249},{"name":"Fish Roll","category":"Starters","pence":200},{"name":"Moin Moin (Big)","category":"Starters","pence":499},{"name":"Special Suya","category":"Starters","pence":1499},{"name":"Plain Fried Rice","category":"Rice","pence":499},{"name":"Fried Rice","category":"Rice","sizes":{"Fried Beef":999,"Fried Chicken":999}},{"name":"Fried Rice with Fish","category":"Rice","pence":999},{"name":"Fried Rice with Fully Assorted Meat","category":"Rice","pence":999},{"name":"Fried Rice with Turkey","category":"Rice","pence":999},{"name":"Asun Rice","category":"Rice","pence":1199,"description":"Rice mixed with goat meat."},{"name":"Jollof Rice with Fish","category":"Rice","pence":999},{"name":"Jollof Rice with Fried Beef","category":"Rice","pence":999},{"name":"Jollof Rice with Fried Chicken","category":"Rice","pence":899},{"name":"Jollof Rice with Fully Assorted Meat","category":"Rice","pence":1199},{"name":"Jollof Rice with Turkey","category":"Rice","pence":999},{"name":"Plain Jollof Rice","category":"Rice","pence":499},{"name":"Mixed Rice with Chicken","category":"Rice","pence":899},{"name":"Mixed Rice with Beef","category":"Rice","pence":999},{"name":"Mixed Rice with Fish","category":"Rice","pence":999},{"name":"Mixed Rice with Fully Assorted Meat","category":"Rice","pence":1199},{"name":"Plain Mixed Rice","category":"Rice","pence":499},{"name":"Plain White Rice","category":"Rice","pence":299},{"name":"White Rice with Ayamashe","category":"Rice","pence":1299},{"name":"White Rice with Fried Beef Stew","category":"Rice","pence":999},{"name":"Plain Basmati Rice","category":"Rice","pence":399},{"name":"Mixed Beans in Sauce","category":"Beans","pence":799},{"name":"Mixed Beans in Sauce with Beef","category":"Beans","pence":999},{"name":"Mixed Beans in Sauce with Fish","category":"Beans","pence":1099},{"name":"Mixed Beans in Sauce with Chicken","category":"Beans","pence":999},{"name":"Mixed Beans with Fully Assorted Meat","category":"Beans","pence":1099},{"name":"Portion of Plain Beans","category":"Beans","pence":499},{"name":"Ewa Agoyin Togolise Beans","category":"Beans","pence":999},{"name":"Banga Soup","category":"Soups","sizes":{"Assorted Meat":1499,"Beef Only":1499,"Fish Only":1499,"Chicken Only":1499}},{"name":"Bitter Leaf Soup Assorted","category":"Soups","pence":1799},{"name":"Edikang Ikong Soup","category":"Soups","sizes":{"Fish":1499,"Chicken":1499,"Assorted Beef":1499}},{"name":"Eforiro Soup","category":"Soups","sizes":{"Assorted Meat":1499,"Fish":1499,"Chicken":1499,"Beef":1499}},{"name":"Egusi Soup","category":"Soups","sizes":{"Assorted Meat":1499,"Chicken":1499,"Fish":1499,"Beef":1499}},{"name":"Ogbono Soup","category":"Soups","sizes":{"Assorted Meat":1499,"Beef":1499,"Fish":1499,"Chicken":1499}},{"name":"Okra Soup","category":"Soups","sizes":{"Assorted Meat":1499,"Beef":1499,"Beef Stew":1499,"Chicken":1499,"Chicken Stew":1499,"Fish Stew":1499,"Fried Fish":1499}},{"name":"Croaker Fish with Fried Plantain","category":"Special Dishes","pence":2999},{"name":"Croaker Fish with Fried Yam","category":"Special Dishes","pence":3199},{"name":"Croaker Fish with Half Plantain and Half Yam","category":"Special Dishes","pence":3199},{"name":"Garnished Beef","category":"Special Dishes","pence":1199},{"name":"Garnished Fish","category":"Special Dishes","pence":1199},{"name":"Garnished Turkey Wings","category":"Special Dishes","pence":1199},{"name":"Garnished Goat Meat","category":"Special Dishes","pence":1199},{"name":"Spaghetti Jollof with Beef","category":"Special Dishes","pence":899},{"name":"Spaghetti Jollof with Chicken","category":"Special Dishes","pence":699},{"name":"Spaghetti Jollof with Fish","category":"Special Dishes","pence":899},{"name":"Spaghetti Jollof with Assorted Meat","category":"Special Dishes","pence":999},{"name":"Spaghetti Bolognese","category":"Special Dishes","pence":1199},{"name":"Grilled Tilapia Fish with Fried Plantain","category":"Special Dishes","pence":1699},{"name":"Grilled Tilapia Fish with Yam","category":"Special Dishes","pence":1999},{"name":"Grilled Tilapia Fish with Half Plantain and Half Yam","category":"Special Dishes","pence":1999},{"name":"Asun","category":"Special Dishes","pence":1199,"description":"Roasted goat meat."},{"name":"Assorted Meat Pepper Soup","category":"Special Dishes","pence":1599},{"name":"Dodo Gizzard","category":"Special Dishes","pence":999,"description":"Gizzard with fried plantain."},{"name":"Isiewu","category":"Special Dishes","pence":1599,"description":"Goat head."},{"name":"Fried Goat Meat (Without Stew)","category":"Special Dishes","pence":1199},{"name":"Nkwobi","category":"Special Dishes","pence":1499},{"name":"Seafood Okra","category":"Special Dishes","pence":2399},{"name":"Chicken Shawarma","category":"Special Dishes","pence":699},{"name":"Abula Stew","category":"Stews","pence":1199},{"name":"Ayamashe Stew Only","category":"Stews","pence":1199},{"name":"Extra Stew","category":"Stews","pence":199},{"name":"Portion of Assorted Meat Stew","category":"Stews","pence":1199},{"name":"Portion of Chicken Stew","category":"Stews","pence":999},{"name":"Portion of Goat Stew","category":"Stews","pence":1199},{"name":"Portion of Fried Beef Stew","category":"Stews","pence":1199},{"name":"Portion of Plain Stew","category":"Stews","pence":499},{"name":"Portion of Turkey Stew","category":"Stews","pence":1199},{"name":"Stock Fish in Stew","category":"Stews","pence":1499},{"name":"Boiled Yam Only","category":"Yam Dishes","pence":499},{"name":"Plain Yam Porridge","category":"Yam Dishes","pence":699},{"name":"Boiled Yam with Fried Egg","category":"Yam Dishes","pence":1099},{"name":"Yam Porridge with Fish","category":"Yam Dishes","pence":1099},{"name":"Yam Porridge with Beef","category":"Yam Dishes","pence":1099},{"name":"Yam Porridge with Chicken","category":"Yam Dishes","pence":999},{"name":"Yam Porridge with Fully Assorted Meat","category":"Yam Dishes","pence":1099},{"name":"Yam Porridge with Stew","category":"Yam Dishes","sizes":{"Beef":1099,"Assorted Meat":1099,"Chicken":1099}},{"name":"Amala","category":"Extras","pence":199},{"name":"Eba","category":"Extras","pence":199},{"name":"Iwisa","category":"Extras","pence":100},{"name":"A Piece of Beef","category":"Extras","pence":199},{"name":"A Piece of Chicken","category":"Extras","pence":199},{"name":"A Piece of Cow Leg","category":"Extras","pence":299},{"name":"A Piece of Fried Fish","category":"Extras","pence":299},{"name":"A Piece of Shaki","category":"Extras","pence":199},{"name":"Plantain (Large)","category":"Extras","pence":599},{"name":"Plantain (Medium)","category":"Extras","pence":399},{"name":"Plantain (Small)","category":"Extras","pence":199},{"name":"Portion of Fried Beef (Without Stew)","category":"Extras","pence":999},{"name":"Portion of Fried Chicken (Without Stew)","category":"Extras","pence":999},{"name":"Portion of Fried Fish (Without Stew)","category":"Extras","pence":999},{"name":"Portion of Goat Meat (Without Stew)","category":"Extras","pence":1199},{"name":"Pounded Yam","category":"Extras","pence":199},{"name":"Semovita","category":"Extras","pence":199},{"name":"Small Portion of Beans","category":"Extras","pence":299},{"name":"Takeaway Plate","category":"Extras","pence":50},{"name":"Wheat","category":"Extras","pence":199},{"name":"Afri-Malt","category":"Non-Alcoholic Drinks","pence":199},{"name":"Apple Juice (Box)","category":"Non-Alcoholic Drinks","pence":299},{"name":"Apple Juice (Glass)","category":"Non-Alcoholic Drinks","pence":199},{"name":"Coca-Cola (Bottle)","category":"Non-Alcoholic Drinks","pence":199},{"name":"Cranberry Juice (Box)","category":"Non-Alcoholic Drinks","pence":299},{"name":"Cranberry Juice (Glass)","category":"Non-Alcoholic Drinks","pence":199},{"name":"Juice Burst Orange","category":"Non-Alcoholic Drinks","pence":199},{"name":"Juice Burst Orange and Carrot","category":"Non-Alcoholic Drinks","pence":199},{"name":"Juice Burst Apple","category":"Non-Alcoholic Drinks","pence":199},{"name":"Juice Burst Black Currant","category":"Non-Alcoholic Drinks","pence":199},{"name":"Fanta (Bottle)","category":"Non-Alcoholic Drinks","pence":220},{"name":"J2O Raspberry","category":"Non-Alcoholic Drinks","pence":199},{"name":"J2O Apple and Mango","category":"Non-Alcoholic Drinks","pence":199},{"name":"J2O Orange and Passion","category":"Non-Alcoholic Drinks","pence":199},{"name":"Malta Guinness","category":"Non-Alcoholic Drinks","pence":199},{"name":"Maltina","category":"Non-Alcoholic Drinks","pence":199},{"name":"Nigerian Fanta","category":"Non-Alcoholic Drinks","pence":350},{"name":"Orange Juice (Box)","category":"Non-Alcoholic Drinks","pence":299},{"name":"Pineapple Juice (Box)","category":"Non-Alcoholic Drinks","pence":199},{"name":"Red Bull","category":"Non-Alcoholic Drinks","pence":250},{"name":"Schweppes Bitter Lemon","category":"Non-Alcoholic Drinks","pence":199},{"name":"Sprite (Bottle)","category":"Non-Alcoholic Drinks","pence":199},{"name":"Supermalt","category":"Non-Alcoholic Drinks","pence":199},{"name":"Chapman","category":"Non-Alcoholic Drinks","pence":199},{"name":"Water","category":"Non-Alcoholic Drinks","pence":120},{"name":"Soft Drink (Can)","category":"Non-Alcoholic Drinks","sizes":{"Coke":149,"Fanta":149,"7Up":149}},{"name":"Guinness (Big)","category":"Alcoholic Drinks","pence":799},{"name":"Guinness (Small)","category":"Alcoholic Drinks","pence":399},{"name":"Orijin Beer (Big)","category":"Alcoholic Drinks","pence":799},{"name":"Orijin Beer (Small)","category":"Alcoholic Drinks","pence":599},{"name":"Orijin Bitters","category":"Alcoholic Drinks","pence":999},{"name":"Heineken (Big)","category":"Alcoholic Drinks","pence":699},{"name":"Heineken (Small)","category":"Alcoholic Drinks","pence":399},{"name":"Trophy","category":"Alcoholic Drinks","pence":699},{"name":"Kolaq","category":"Alcoholic Drinks","pence":999},{"name":"Alomo","category":"Alcoholic Drinks","pence":999},{"name":"Odogwu","category":"Alcoholic Drinks","pence":999},{"name":"Jekonmo","category":"Alcoholic Drinks","pence":599},{"name":"Stella","category":"Alcoholic Drinks","pence":399},{"name":"Star","category":"Alcoholic Drinks","pence":699},{"name":"Sparkling Mineral Water","category":"Cold Drinks","pence":400},{"name":"Apple Carrot Ginger Tonic","category":"Cold Drinks","pence":400},{"name":"Freshly Pressed Apple Soda","category":"Cold Drinks","pence":500},{"name":"Ginger Tulsi Tea","category":"Cold Drinks","pence":500},{"name":"Espresso","category":"Hot Drinks","pence":300},{"name":"Cappuccino","category":"Hot Drinks","pence":300},{"name":"Latte","category":"Hot Drinks","pence":300},{"name":"Tea","category":"Hot Drinks","sizes":{"Black":200,"Herbal":200}}];
+const LIVE={ok:false,loaded:false,open:true,allergy:'Tell staff about any food allergies. Food may contain or come into contact with wheat, fish, soy, peanuts, tree nuts, eggs, shellfish or dairy.',off:[]};
+const slug=s=>s.toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const artOf=k=>(ART_DISHES.find(a=>a.id===k)||ART_DISHES[3]).art;
+const CUP=c=>({kind:'cup',base:c});
+const PLATE_OF=(top,base)=>base?{kind:'plate',base,tex:'#ffffff22',top}:{kind:'plate',noBase:true,top};
+// [pattern, artwork, heat 0-3, tags, description] - first match wins
+const FAMILY=[
+ [/pepper soup/,'goatpepper',3,['grill','light'],'A hot, aromatic Nigerian pepper soup.'],
+ [/asun rice/,'jollof',3,['rice','grill'],''],
+ [/\basun\b/,'asun',3,['grill'],''],
+ [/special suya/,'suya',2,['grill'],'A generous special plate of spiced suya.'],
+ [/suya/,'suya',2,['grill','light'],'Grilled suya dusted with yaji spice.'],
+ [/spaghetti jollof/,'jollof',1,['rice'],'Spaghetti cooked jollof-style in a rich tomato and pepper sauce.'],
+ [/spaghetti/,PLATE_OF([['#7a3a1c',6,'chunk'],['#3f8f3a',4,'leaf']],'#c9401a'),0,['light'],'Spaghetti with a rich meat sauce.'],
+ [/jollof/,'jollof',1,['rice'],'Smoky jollof rice cooked in a rich tomato and pepper base.'],
+ [/fried rice/,'ebere',1,['rice'],'Nigerian-style fried rice with mixed vegetables.'],
+ [/mixed rice/,'ebere',1,['rice'],'Nigerian mixed rice.'],
+ [/ayamashe/,'ofada',3,['rice'],'Ayamase: a bold green-pepper stew.'],
+ [/basmati|white rice/,'whiterice',1,['rice','light'],'Fluffy steamed rice.'],
+ [/moin moin/,'moimoi',1,['light'],'Steamed bean pudding with peppers and onions.'],
+ [/puff puff/,'puffpuff',0,['light'],'Golden, pillowy fried dough balls, lightly sweet.'],
+ [/agoyin/,'agoyin',2,['light'],'Soft mashed beans with a smoky pepper sauce.'],
+ [/beans/,'beansdodo',1,['light'],'Beans cooked in a rich sauce.'],
+ [/egusi/,'egusi',2,['swallow'],'Ground melon seed soup with leafy greens.'],
+ [/eforiro|edikang|bitter leaf/,'efo',2,['swallow'],'A rich green-leaf soup.'],
+ [/ogbono/,'ogbono',1,['swallow'],'Silky draw soup made from ground ogbono seeds.'],
+ [/seafood okra/,'okra',1,['swallow'],'Okra soup loaded with seafood.'],
+ [/okra/,'okra',1,['swallow'],'Fresh chopped okra soup.'],
+ [/banga/,'nkwobi',2,['swallow'],'Rich palm-nut soup.'],
+ [/nkwobi/,'nkwobi',2,['grill'],'Spiced cow foot in a thick palm-oil sauce.'],
+ [/isiewu/,'isiewu',2,['grill'],''],
+ [/gizzard/,'gizzard',2,['grill','light'],''],
+ [/tilapia|croaker/,PLATE_OF([['#8a6a4a',1,'fish'],['#e7a03a',5,'slice']]),1,['grill'],'Whole fish, cooked to order, with sides.'],
+ [/fish roll|meatpie|samosa|spring roll|shawarma/,PLATE_OF([['#d9a24a',5,'stick']]),0,['light'],'A favourite snack from our kitchen.'],
+ [/prawn/,PLATE_OF([['#e88c7a',8,'prawn']]),0,['light'],'Crispy battered king prawns.'],
+ [/snail/,PLATE_OF([['#5b3a24',7,'ball'],['#c63b1c',6,'dot']]),2,['grill'],'Peppered snail, a Nigerian delicacy.'],
+ [/stock fish/,'panla',2,['rice'],'Stock fish simmered in a rich stew.'],
+ [/stew/,'chickenstew',1,['rice'],'A rich Nigerian tomato and pepper stew.'],
+ [/yam porridge/,'asaro',1,['light'],'Soft yam cooked down in a palm-oil pepper sauce.'],
+ [/pounded yam/,'poundo',0,['swallow'],'Smooth, stretchy pounded yam for your soup.'],
+ [/yam/,'dundun',0,['light'],'Yam, Nigerian style.'],
+ [/plantain|dodo/,'dodo',0,['light'],'Sweet fried ripe plantain.'],
+ [/amala/,'amala',0,['swallow'],'Earthy yam-flour swallow.'],
+ [/eba|semovita|wheat|iwisa/,'eba',0,['swallow'],'Swallow to go with your soup.'],
+ [/garnished|goat meat|fried beef|fried chicken|fried fish|piece of|turkey/,PLATE_OF([['#8a3e1c',6,'chunk'],['#e2452a',6,'dot'],['#3f8f3a',3,'leaf']]),1,['grill'],''],
+ [/takeaway plate/,PLATE_OF([]),0,[],'A takeaway container for your order.'],
+ [/chapman/,'chapman',0,['light'],'Nigeria\u2019s iconic fruity drink.'],
+ [/malt|guinness|stout/,CUP('#2a140a'),0,['light'],''],
+ [/cola|coke|pepsi/,CUP('#3a1a0c'),0,['light'],''],
+ [/fanta|orange/,CUP('#f28c1b'),0,['light'],''],
+ [/sprite|water|lemon|7up|soda|tonic/,CUP('#cfe8e0'),0,['light'],''],
+ [/apple|pineapple|mango/,CUP('#e8c547'),0,['light'],''],
+ [/cranberry|raspberry|currant|red bull/,CUP('#b3123a'),0,['light'],''],
+ [/heineken|star|trophy|stella|budweiser|orijin|jekonmo|odogwu|alomo|kolaq|beer|bitters/,CUP('#e0a82a'),0,['light'],''],
+ [/tea|latte|cappuccino|espresso|coffee/,CUP('#7a4a2a'),0,['light'],''],
+];
+const STARS=['Jollof Rice with Fried Chicken','Asun Rice','Egusi Soup','Suya','Puff Puff','Asun'];
+const isDrinkCat=c=>/drink/i.test(c);
+function buildDish(m){
+  const n=m.name.toLowerCase();let f=FAMILY.find(x=>x[0].test(n));
+  if(!f)f=[null,isDrinkCat(m.category)?CUP('#d2302a'):PLATE_OF([['#8a3e1c',5,'chunk']]),0,['light'],''];
+  const art=typeof f[1]==='string'?artOf(f[1]):f[1];
+  const sizes=m.sizes&&Object.keys(m.sizes).length?m.sizes:null;
+  const pence=sizes?Math.min(...Object.values(sizes)):Number(m.pence||0);
+  const sameAll=sizes&&new Set(Object.values(sizes)).size===1;
+  return{id:slug(m.name),name:m.name,cat:m.category,sizes,pence,priceNum:pence/100,price:(sizes&&!sameAll?'from ':'')+gbp(pence/100),
+    desc:m.description||f[4]||`From our ${m.category.toLowerCase()} menu.`,heat:f[2],tags:f[3],star:STARS.includes(m.name),art,artKey:typeof f[1]==='string'?f[1]:'',drink:isDrinkCat(m.category)};
+}
+function setMenu(items){
+  const list=items.filter(m=>m&&m.name&&(m.sizes&&Object.keys(m.sizes).length||Number(m.pence)>0)).map(buildDish);
+  DISHES.length=0;DISHES.push(...list);
+  CATS=['All',...new Set(DISHES.map(d=>d.cat))];
+}
+let CATS=['All'];
+setMenu(MENU_SNAPSHOT);
+const realDish=id=>DISHES.find(d=>d.id===id);
+const offKey=v=>slug(String(v||''));
+const isOff=(d,size)=>LIVE.off.some(o=>offKey(o.item)===d.id&&(!o.option||offKey(o.option)===offKey(size)));
+const allOff=d=>LIVE.off.some(o=>offKey(o.item)===d.id&&!o.option)||(!!d.sizes&&Object.keys(d.sizes).every(s=>isOff(d,s)));
+// one-time reset of the old demo basket/history (demo dishes are not on the real menu)
+(()=>{try{if(localStorage.getItem('agg-dataVer')!=='"live1"'){['cart','history','orders','favs','last','order'].forEach(k=>localStorage.removeItem('agg-'+k));localStorage.setItem('agg-dataVer','"live1"')}}catch(e){}})();
 
 // Highlight videos. Set type to "youtube" with id (e.g. "dQw4w9WgXcQ"), or "mp4" with src (a URL to an .mp4 file).
 // Leave id/src empty and the card links to your TikTok instead.
@@ -1257,7 +1362,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const store={get(k,d){try{return JSON.parse(localStorage.getItem('agg-'+k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem('agg-'+k,JSON.stringify(v))}catch(e){}}};
 const reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),1900)}
-const dishById=id=>DISHES.find(d=>d.id===id);
+const dishById=id=>DISHES.find(d=>d.id===id)||ART_DISHES.find(d=>d.id===id);
 // Pause SVG/CSS animations that are scrolled out of view (big win for phones)
 const animIO='IntersectionObserver' in window?new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('offscreen',!e.isIntersecting)),{rootMargin:'120px'}):null;
 const watched=new WeakSet();
@@ -1317,7 +1422,9 @@ let curRoute=null;
 function hashRoute(){let h='';try{h=location.hash}catch(e){}return(h.replace(/^#\/?/,'')||'home').split(/[?#]/)[0]||'home'}
 function go(r){r=r||'home';try{history.pushState(null,'','#/'+(r==='home'?'':r))}catch(e){}route(r)}
 function route(forced){
-  const r=typeof forced==='string'?forced:hashRoute();curRoute=r;
+  let r=typeof forced==='string'?forced:hashRoute();
+  if(r==='order'){let h='';try{h=location.hash}catch(e){}const m=(h.match(/draft=([0-9a-f-]{36})/i)||[])[1];try{history.replaceState(null,'','#/')}catch(e){}r='home';setTimeout(()=>m?resumeOrder(m):openOrder(),0)}
+  curRoute=r;
   const page=$(`.page[data-page="${r}"]`)||$('.page[data-page="home"]');
   $$('.page').forEach(p=>p.classList.toggle('active',p===page));
   $$('.nav-links a, .tabbar a').forEach(a=>{const t=a.getAttribute('href').replace('#/','')||'home';a.toggleAttribute('aria-current',t===page.dataset.page);if(t===page.dataset.page)a.setAttribute('aria-current','page')});
@@ -1391,7 +1498,7 @@ function confetti(box){if(reduced)return;const c=['#ff6a2b','#e85a30','#1f8a4c',
    MENU PAGE
    ===================================================================== */
 const ms={cat:'All',heat:3,q:''};
-$('#menuChips').innerHTML=CATS.map(c=>`<button class="chip" data-c="${c}" aria-pressed="${c==='All'}">${c}</button>`).join('');
+function buildChips(){const h=CATS.map(c=>`<button class="chip" data-c="${c}" aria-pressed="${c==='All'}">${c}</button>`).join('');$('#menuChips').innerHTML=h;$('#mChips').innerHTML=h;ms.cat='All';mState.cat='All'}
 $('#menuChips').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;ms.cat=b.dataset.c;$$('#menuChips .chip').forEach(x=>x.setAttribute('aria-pressed',x===b));renderMenu()};
 const HL=['No heat','Mild','Medium','Bring the fire'];
 $('#heat').oninput=e=>{ms.heat=+e.target.value;$('#heatOut').textContent=HL[ms.heat];renderMenu()};
@@ -1400,7 +1507,7 @@ $('#menuQ').oninput=debounce(e=>{ms.q=e.target.value.toLowerCase().trim();render
 let menuBuilt=false;
 function buildMenu(){
   $('#menuGrid').innerHTML=DISHES.map(d=>`<article class="card dish" data-id="${d.id}"><button class="heart-btn" data-fav="${d.id}" aria-pressed="${isFav(d.id)}" aria-label="Save ${esc(d.name)} to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.2 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.4 3.7 3.8 6.9C19 15.6 12 20 12 20z"/></svg></button>${d.star?'<span class="tag">House favourite</span>':''}<div class="art">${dishSVG(d)}</div><h3><button class="dish-open" data-open="${d.id}">${d.name}</button></h3><p>${d.desc}</p>
-   <div class="dish-foot"><div class="chili" aria-label="Heat ${d.heat} of 3">${[1,2,3].map(i=>CHILI(i<=d.heat)).join('')}</div>${d.price?`<span class="price">${d.price}</span>`:''}<button class="add" data-add="${d.id}" aria-label="Add ${esc(d.name)} to order"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Add</span></button></div></article>`).join('')+`<div class="empty" id="menuEmpty" hidden>No dishes match. Try turning up the heat dial or clearing the search.</div>`;
+   <div class="dish-foot"><div class="chili" aria-label="Heat ${d.heat} of 3">${[1,2,3].map(i=>CHILI(i<=d.heat)).join('')}</div><span class="price">${d.price}</span>${allOff(d)?'<span class="soldout">Sold out</span>':`<button class="add" data-add="${d.id}" aria-label="${d.sizes?'Choose':'Add'} ${esc(d.name)}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>${d.sizes?'Choose':'Add'}</span></button>`}</div></article>`).join('')+`<div class="empty" id="menuEmpty" hidden>No dishes match. Try turning up the heat dial or clearing the search.</div>`;
   if(!reduced&&matchMedia('(hover:hover)').matches)$$('#menuGrid .dish').forEach(c=>{c.onmousemove=e=>{const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;c.style.transform=`perspective(900px) rotateY(${x*8}deg) rotateX(${-y*8}deg) translateY(-4px)`};c.onmouseleave=()=>c.style.transform=''});
   menuBuilt=true;watchAnim($('#menuGrid'));
 }
@@ -1410,29 +1517,7 @@ function renderMenu(){
   $('#menuEmpty').hidden=shown>0;
 }
 $('#menuGrid').onclick=e=>{const h=e.target.closest('[data-fav]');if(h)return toggleFav(h.dataset.fav,h);const b=e.target.closest('[data-add]');if(b)return addToCart(b.dataset.add,b);const c=e.target.closest('.dish');if(c)openDish(c.dataset.id)};
-let menuInit=false;function initMenuPage(){if(menuInit)return;menuInit=true;renderMenu();renderPlate()}
-// builder
-const STEPS=[
- {key:'base',title:'Pick your base',hint:'Rice or swallow, the foundation of the plate.',opts:[['Jollof Rice','#d4501f'],['Ebere Fried Rice','#e3b94c'],['White Rice','#efe8da'],['Pounded Yam','#f1ead6'],['Eba','#f0d98a'],['Amala','#6b5040']]},
- {key:'sauce',title:'Add a soup or stew',hint:'The soul of the plate.',opts:[['Egusi','#d99b2b'],['Efo Riro','#2e6b2a'],['Ayamase','#3f6b2a'],['Tomato Stew','#c63b1c'],['Panla Fish Stew','#c23a18'],['Okra','#6f9a2c']]},
- {key:'protein',title:'Choose your protein',hint:'Go big or go home.',opts:[['Chicken','#b8742e'],['Goat Meat','#6b3a1e'],['Beef','#5b2a14'],['Turkey','#a35a2a'],['Fish','#8a6a4a']]},
- {key:'side',title:'Finish with a side',hint:'Optional, but highly recommended.',opts:[['Dodo','#e7a03a'],['Moi Moi','#d9773a'],['No side','']]},
-];
-const plate={};
-$('#builderSteps').innerHTML=STEPS.map((s,i)=>`<div class="step"><h4><span>${i+1}</span>${s.title}</h4><p>${s.hint}</p><div class="opts" data-step="${s.key}">${s.opts.map(([n,c])=>`<button class="opt" data-v="${n}" data-c="${c}">${c?`<span class="sw" style="background:${c}"></span>`:''}${n}</button>`).join('')}</div></div>`).join('');
-$('#builderSteps').onclick=e=>{const b=e.target.closest('.opt');if(!b)return;const g=b.parentElement;g.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed',x===b));plate[g.dataset.step]={n:b.dataset.v,c:b.dataset.c};renderPlate()};
-const SW=['Pounded Yam','Eba','Amala'];
-function renderPlate(){
-  const r=rng(JSON.stringify(plate)),{base,sauce,protein:pro,side}=plate;let g='';
-  if(base)g+=SW.includes(base.n)?`<ellipse cx="78" cy="104" rx="38" ry="34" fill="${base.c}"/><ellipse cx="68" cy="92" rx="14" ry="8" fill="#fff" opacity=".35"/>`:`<path d="M40 100a60 60 0 0 1 60-56v112a60 60 0 0 1-60-56z" fill="${base.c}"/>${Array.from({length:30},()=>`<circle cx="${(50+r()*45).toFixed(0)}" cy="${(55+r()*90).toFixed(0)}" r="1.6" fill="rgba(255,255,255,.45)"/>`).join('')}`;
-  if(sauce)g+=`<path d="M108 46a58 58 0 0 1 0 108q-12-54 0-108z" fill="${sauce.c}"/><circle cx="132" cy="96" r="44" fill="${sauce.c}"/><circle class="ripple" cx="132" cy="96" r="40" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2"/>`;
-  if(pro)for(let i=0;i<3;i++){const x=(118+r()*30).toFixed(0),y=(78+r()*36).toFixed(0);g+=`<rect class="bob" style="animation-delay:-${i}s" x="${x}" y="${y}" width="16" height="12" rx="4" fill="${pro.c}" transform="rotate(${(r()*60-30).toFixed(0)} ${x} ${y})"/>`}
-  if(side&&side.n!=='No side')g+=side.n==='Dodo'?[0,1,2].map(i=>`<ellipse class="bob" style="animation-delay:-${i*.7}s" cx="${86+i*16}" cy="150" rx="10" ry="6" fill="#e7a03a" stroke="#a85a18" stroke-width="2"/>`).join(''):`<path d="M84 160q0-26 22-26t22 26z" fill="#d9773a"/><path d="M84 160h44" stroke="#a24d1e" stroke-width="3"/>`;
-  $('#builderArt').innerHTML=`<svg viewBox="0 0 200 200" role="img" aria-label="Your custom plate"><ellipse cx="100" cy="190" rx="72" ry="7" fill="rgba(0,0,0,.12)"/><g class="spin">${PLATE}${g}</g>${base?STEAM:''}</svg>`;
-  const parts=plateParts();$('#builderSum').textContent=parts.length?parts.join(' + '):'Start by picking a base.';$('#builderAdd').disabled=!(base&&sauce&&pro);
-}
-const plateParts=()=>[plate.base,plate.sauce,plate.protein,plate.side&&plate.side.n!=='No side'?plate.side:null].filter(Boolean).map(x=>x.n);
-$('#builderAdd').onclick=e=>{const p=plateParts();addToCart(null,e.currentTarget,{key:'custom:'+p.join('|'),name:'Custom plate',sub:p.join(' + '),dish:SW.includes(plate.base.n)?'egusi':'jollof'})};
+let menuInit=false;function initMenuPage(){if(menuInit)return;menuInit=true;renderMenu()}
 
 /* =====================================================================
    CART + ORDER MODAL
@@ -1467,22 +1552,27 @@ function flyToBasket(el,dishId){
   f.animate([{transform:'translate(0,0) scale(1) rotate(0)',opacity:1},{transform:`translate(${dx*.5}px,${dy*.5-120}px) scale(1.15) rotate(200deg)`,opacity:1,offset:.5},{transform:`translate(${dx}px,${dy}px) scale(.25) rotate(400deg)`,opacity:.6}],{duration:750,easing:'cubic-bezier(.45,.05,.55,.95)'}).onfinish=()=>{f.remove();tgt.animate([{transform:'rotate(0) scale(1)'},{transform:'rotate(-14deg) scale(1.2)'},{transform:'rotate(12deg) scale(1.15)'},{transform:'rotate(-6deg) scale(1.05)'},{transform:'rotate(0) scale(1)'}],{duration:500})};
   return tgt;
 }
-function addToCart(id,el,custom){try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}
-  const d=id&&dishById(id),key=custom?custom.key:id;
-  if(!cart[key])cart[key]={qty:0,name:custom?custom.name:d.name,sub:custom?custom.sub:d.cat,dish:custom?custom.dish:id,custom:!!custom,price:custom?PLATE_PRICE:d.priceNum};
-  cart[key].qty++;store.set('cart',cart);renderCart();
-  if(el&&el.classList.contains('add')){el.classList.add('added');el.querySelector('span').textContent='Added';setTimeout(()=>{el.classList.remove('added');el.querySelector('span').textContent='Add'},1100)}
+const cartKey=(id,size)=>id+(size?'|'+size:'');
+function addToCart(id,el,size,qty=1){
+  const d=realDish(id);if(!d){toast('That dish isn\u2019t on today\u2019s menu');return}
+  if(d.sizes&&!size){openDish(id);return}
+  if(isOff(d,size)||allOff(d)){toast(`Sorry, ${d.name}${size?' ('+size+')':''} is sold out right now`);return}
+  try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}
+  const key=cartKey(id,size),each=(size?d.sizes[size]:d.pence)/100;
+  if(!cart[key])cart[key]={qty:0,name:d.name,size:size||null,sub:size||d.cat,dish:id,price:each};
+  cart[key].price=each;cart[key].qty=Math.min(20,cart[key].qty+qty);store.set('cart',cart);renderCart();
+  if(el&&el.classList.contains('add')){el.classList.add('added');const sp=el.querySelector('span');const was=sp.textContent;sp.textContent='Added';setTimeout(()=>{el.classList.remove('added');sp.textContent=was},1100)}
   const n=count(),ms=MILESTONES[n];
   Snd.ui('add',n);if(ms)Snd.ui('milestone');
-  flyToBasket(el,custom?custom.dish:id);
-  toast(ms?`${ms} (${n} items)`:`${custom?'Custom plate':cart[key].name}: ${pick(LINES[custom?'':id]||GENERIC)}`);
+  flyToBasket(el,id);
+  toast(ms?`${ms} (${n} items)`:`${qty>1?qty+' × ':''}${d.name}${size?' ('+size+')':''}: ${pick(LINES[d.artKey]||GENERIC)}`);
   $('#navCount').animate([{transform:'scale(1)'},{transform:'scale(1.5)'},{transform:'scale(1)'}],{duration:400});
 }
 const count=()=>Object.values(cart).reduce((s,c)=>s+c.qty,0);
-const unit=c=>c.price??(dishById(c.dish)?.priceNum||PLATE_PRICE);
-function totals(){const sub=Object.values(cart).reduce((s,c)=>s+unit(c)*c.qty,0);const{min}=londonNow();const lunch=sub>0&&min>=720&&min<900?1:0;return{sub,lunch,total:Math.max(0,sub-lunch)}}
+const unit=c=>Number(c.price)||0;
+function totals(){const sub=Object.values(cart).reduce((s,c)=>s+unit(c)*c.qty,0);return{sub,lunch:0,total:sub}}
 function lineEl(k,c){const d=dishById(c.dish)||DISHES[3],el=document.createElement('div');el.className='line';el.dataset.k=k;
-  el.innerHTML=`<div class="mini">${dishSVG(d,{steam:false})}</div><div class="nm">${esc(c.name)}<small>${esc(c.sub)} · <span class="lp">${gbp(unit(c)*c.qty)}</span></small></div><div class="qty"><button data-dec="${esc(k)}" aria-label="One less ${esc(c.name)}">−</button><span class="q" aria-live="polite">${c.qty}</span><button data-inc="${esc(k)}" aria-label="One more ${esc(c.name)}">+</button></div>`;return el}
+  el.innerHTML=`<div class="mini">${dishSVG(d,{steam:false})}</div><div class="nm">${esc(c.name)}<small>${c.size?esc(c.size)+' · ':''}<span class="lp">${gbp(unit(c)*c.qty)}</span></small></div><div class="qty"><button data-dec="${esc(k)}" aria-label="One less ${esc(c.name)}">−</button><span class="q" aria-live="polite">${c.qty}</span><button data-inc="${esc(k)}" aria-label="One more ${esc(c.name)}">+</button></div>`;return el}
 function renderCart(){
   const n=count();$('#navCount').textContent=n;$('#tabCount').textContent=n;$('#tabCount').hidden=!n;$('#bCount').textContent=n;
   const host=$('#mLines'),keys=Object.keys(cart);
@@ -1495,18 +1585,20 @@ function renderCart(){
       if(!el||el.dataset.leaving){el=lineEl(k,c);host.appendChild(el);if(!reduced)el.animate([{opacity:0,transform:'translateY(-8px)'},{opacity:1,transform:'none'}],{duration:240,easing:'ease-out'})}
       else{const q=el.querySelector('.q');if(q.textContent!=String(c.qty)){q.textContent=c.qty;el.querySelector('.lp').textContent=gbp(unit(c)*c.qty);if(!reduced)q.animate([{transform:'scale(1)'},{transform:'scale(1.45)'},{transform:'scale(1)'}],{duration:240})}}})}
   $('#toDetails').disabled=!keys.length;$('#toDetails').style.opacity=keys.length?1:.5;
-  const T=totals(),tot=$('#mTotals'),html=keys.length?`<div class="tot"><span>Subtotal</span><span>${gbp(T.sub)}</span></div>${T.lunch?`<div class="tot" style="color:var(--green)"><span>Lunch deal (12–3pm)</span><span>−${gbp(T.lunch)}</span></div>`:''}<div class="tot big"><span>Total</span><span>${gbp(T.total)}</span></div>`:'';
+  const T=totals(),tot=$('#mTotals'),html=keys.length?`<div class="tot big"><span>Total</span><span>${gbp(T.total)}</span></div>`:'';
   if(tot.innerHTML!==html)tot.innerHTML=html;
   $('#toDetails').textContent=keys.length?`Continue · ${gbp(T.total)}`:'Continue';
 }
+function reconcileCart(){let changed=false;Object.entries(cart).forEach(([k,c])=>{const d=realDish(c.dish);const p=d&&(c.size?d.sizes?.[c.size]:(d.sizes?null:d.pence));
+  if(!d||p==null){delete cart[k];changed=true;return}if(Math.abs(p/100-c.price)>1e-9){c.price=p/100;changed=true}});if(changed){store.set('cart',cart);renderCart()}}
 $('#mLines').onclick=e=>{const i=e.target.closest('[data-inc]'),d=e.target.closest('[data-dec]');if(i){cart[i.dataset.inc].qty++;Snd.ui('add',count())}if(d){const k=d.dataset.dec,nm=cart[k].name;if(--cart[k].qty<=0){delete cart[k];Snd.ui('remove');toast(`${nm} removed. Ah, you no like am again?`)}else Snd.ui('remove')}if(i||d){store.set('cart',cart);renderCart()}};
 const mState={cat:'All',q:''};
-$('#mChips').innerHTML=CATS.map(c=>`<button class="chip" data-c="${c}" aria-pressed="${c==='All'}">${c}</button>`).join('');
+buildChips();
 $('#mChips').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;mState.cat=b.dataset.c;$$('#mChips .chip').forEach(x=>x.setAttribute('aria-pressed',x===b));renderMList()};
 $('#mQ').oninput=debounce(e=>{mState.q=e.target.value.toLowerCase().trim();renderMList()});
 let mBuilt=false;
 function buildMList(){
-  $('#mList').innerHTML=CATS.slice(1).map(c=>`<section data-cat="${c}"><h4 class="m-cat">${c}</h4>`+DISHES.filter(d=>d.cat===c).map(d=>`<div class="row" data-id="${d.id}"><div class="mini">${dishSVG(d,{steam:false})}</div><button class="nm row-open" data-open="${d.id}" aria-label="View ${esc(d.name)}"><b>${d.name}${d.price?` · ${d.price}`:''}</b><small>${d.desc}</small></button><div class="chili" aria-label="Heat ${d.heat} of 3">${[1,2,3].map(i=>CHILI(i<=d.heat)).join('')}</div><button class="plus" data-madd="${d.id}" aria-label="Add ${esc(d.name)}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>`).join('')+'</section>').join('')+'<p class="empty" id="mEmpty" hidden>Nothing matches that search.</p>';
+  $('#mList').innerHTML=CATS.slice(1).map(c=>`<section data-cat="${c}"><h4 class="m-cat">${c}</h4>`+DISHES.filter(d=>d.cat===c).map(d=>`<div class="row" data-id="${d.id}"><div class="mini">${dishSVG(d,{steam:false})}</div><button class="nm row-open" data-open="${d.id}" aria-label="View ${esc(d.name)}"><b>${d.name} · ${d.price}</b><small>${allOff(d)?'Sold out today':(d.sizes?'Choose: '+Object.keys(d.sizes).join(', '):d.desc)}</small></button><div class="chili" aria-label="Heat ${d.heat} of 3">${[1,2,3].map(i=>CHILI(i<=d.heat)).join('')}</div><button class="plus" data-madd="${d.id}" ${allOff(d)?'disabled':''} aria-label="Add ${esc(d.name)}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>`).join('')+'</section>').join('')+'<p class="empty" id="mEmpty" hidden>Nothing matches that search.</p>';
   mBuilt=true;
 }
 function renderMList(){
@@ -1527,27 +1619,27 @@ function toggleFav(id,btn){if(favs.has(id))favs.delete(id);else favs.add(id);sto
   if(curRoute==='favourites')renderFavs()}
 function recordOrder(){const items=Object.values(cart).filter(c=>c.qty>0);if(!items.length)return;
   const h=store.get('history',{}),orders=store.get('orders',[]);
-  items.forEach(c=>{if(c.custom)return;const e=h[c.dish]||{n:0,last:0};e.n+=c.qty;e.last=Date.now();h[c.dish]=e});
-  orders.unshift({t:Date.now(),items:items.map(c=>({k:c.custom?c.name+'|'+c.sub:c.dish,name:c.name,sub:c.sub,dish:c.dish,qty:c.qty,price:unit(c),custom:!!c.custom}))});
+  items.forEach(c=>{const e=h[c.dish]||{n:0,last:0};e.n+=c.qty;e.last=Date.now();h[c.dish]=e});
+  orders.unshift({t:Date.now(),items:items.map(c=>({dish:c.dish,size:c.size,name:c.name,qty:c.qty,price:unit(c)}))});
   store.set('history',h);store.set('orders',orders.slice(0,10))}
 function favRow(d,extra=''){return`<div class="fav-row" data-open="${d.id}"><div class="mini">${dishSVG(d,{steam:false})}</div><div class="nm"><b>${d.name}${extra}</b><small>${d.cat}</small></div><span class="price">${d.price}</span><button class="heart-btn" data-fav="${d.id}" aria-pressed="${isFav(d.id)}" aria-label="Save ${esc(d.name)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.2 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.4 3.7 3.8 6.9C19 15.6 12 20 12 20z"/></svg></button><button class="plus" data-fadd="${d.id}" aria-label="Add ${esc(d.name)}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>`}
 const agoTxt=t=>{const d=Math.round((Date.now()-t)/864e5);return d<1?'Today':d===1?'Yesterday':d+' days ago'};
 function renderFavs(){
   const h=store.get('history',{}),orders=store.get('orders',[]);
-  const usual=Object.entries(h).filter(([id])=>dishById(id)).sort((a,b)=>b[1].n-a[1].n||b[1].last-a[1].last).slice(0,8);
-  $('#favUsuals').innerHTML=usual.map(([id,e])=>favRow(dishById(id),`<span class="times">${e.n}×</span>`)).join('');$('#favUsualsSec').hidden=!usual.length;
-  const saved=[...favs].map(dishById).filter(Boolean);
+  const usual=Object.entries(h).filter(([id])=>realDish(id)).sort((a,b)=>b[1].n-a[1].n||b[1].last-a[1].last).slice(0,8);
+  $('#favUsuals').innerHTML=usual.map(([id,e])=>favRow(realDish(id),`<span class="times">${e.n}×</span>`)).join('');$('#favUsualsSec').hidden=!usual.length;
+  const saved=[...favs].map(realDish).filter(Boolean);
   $('#favSaved').innerHTML=saved.map(d=>favRow(d)).join('');$('#favSavedSec').hidden=!saved.length;
   $('#favRecentSec').hidden=!orders.length;$('#favRecent').innerHTML=orders.slice(0,2).map((o,i)=>{const tot=o.items.reduce((s,x)=>s+x.price*x.qty,0),n=o.items.reduce((s,x)=>s+x.qty,0);
     return`<div class="recent"><div class="minis">${o.items.slice(0,4).map(x=>`<span class="mini">${dishSVG(dishById(x.dish)||DISHES[3],{steam:false})}</span>`).join('')}</div><div class="info"><b>${i===0?'Your last order':'Earlier order'} · ${agoTxt(o.t)}</b><small>${o.items.map(x=>x.qty+'× '+esc(x.name)).join(', ')} · ${n} item${n>1?'s':''} · ${gbp(tot)}</small></div><button class="btn btn-grad btn-sm" data-reorder="${i}">Reorder</button></div>`}).join('');
-  const fresh=!usual.length;const pop=DISHES.filter(d=>d.star||['suya','dodo','chapman','puffpuff'].includes(d.id)).filter(d=>fresh||!h[d.id]).slice(0,6);
+  const fresh=!usual.length;const pop=DISHES.filter(d=>d.star||['chapman','plantain-medium','jollof-rice-with-fish','moin-moin'].includes(d.id)).filter(d=>!allOff(d)&&(fresh||!h[d.id])).slice(0,6);
   $('#favPopTitle').textContent=fresh?'Popular at A.G.G\u2019s':'You might also like';$('#favPopNote').textContent=fresh?'Tap + to add, ♥ to save. Your usuals will appear here after you order.':'Dishes you haven\u2019t tried yet';
   $('#favPop').innerHTML=pop.map(d=>favRow(d)).join('');$('#favPopSec').hidden=!pop.length;
 }
 document.querySelector('[data-page="favourites"]').addEventListener('click',e=>{
   const hb=e.target.closest('[data-fav]');if(hb)return toggleFav(hb.dataset.fav,hb);
   const a=e.target.closest('[data-fadd]');if(a){addToCart(a.dataset.fadd,a);a.animate([{transform:'scale(1)'},{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:280});return}
-  const r=e.target.closest('[data-reorder]');if(r){const o=store.get('orders',[])[+r.dataset.reorder];if(!o)return;o.items.forEach(x=>{const k=x.custom?'custom:'+x.sub.split(' + ').join('|'):x.dish;if(!cart[k])cart[k]={qty:0,name:x.name,sub:x.sub,dish:x.dish,custom:x.custom,price:x.price};cart[k].qty+=x.qty});store.set('cart',cart);renderCart();Snd.ui('add',count());Snd.ui('milestone');toast('Your order is back in the basket. Same again, chef!');openOrder();return}
+  const r=e.target.closest('[data-reorder]');if(r){const o=store.get('orders',[])[+r.dataset.reorder];if(!o)return;let skipped=0;o.items.forEach(x=>{const d=realDish(x.dish);if(!d||(x.size&&!d.sizes?.[x.size])||isOff(d,x.size)){skipped++;return}const k=cartKey(x.dish,x.size);if(!cart[k])cart[k]={qty:0,name:d.name,size:x.size||null,sub:x.size||d.cat,dish:x.dish,price:(x.size?d.sizes[x.size]:d.pence)/100};cart[k].qty+=x.qty});store.set('cart',cart);renderCart();if(skipped)setTimeout(()=>toast(`${skipped} item${skipped>1?'s are':' is'} no longer available`),1600);Snd.ui('add',count());Snd.ui('milestone');toast('Your order is back in the basket. Same again, chef!');openOrder();return}
   const row=e.target.closest('[data-open]');if(row)openDish(row.dataset.open)});
 
 /* One place decides whether the page behind an overlay may scroll */
@@ -1555,29 +1647,35 @@ function syncScroll(){const lock=$('#orderModal').classList.contains('on')||!$('
   document.documentElement.style.overflow=lock?'hidden':'';document.body.style.overflow=lock?'hidden':''}
 addEventListener('pageshow',syncScroll);
 /* ===== Big dish view ===== */
-const PAIRS={'Soup Dishes':['poundo','eba','amala'],'Rice Menu':['dodo','chapman','moimoi'],'Stew Dishes':['whiterice','dodo','zobo'],'Starter':['chapman','zobo','jollof'],'Special Dishes':['malt','chapman','dodo'],'Beans Menu':['dodo','zobo','puffpuff'],'Yam Dishes':['dodo','chapman','egusi'],'Extras':['egusi','efo','ogbono'],'Drinks':['jollof','suya','puffpuff']};
+const PAIRS={'Soups':['pounded-yam','eba','amala'],'Rice':['plantain-medium','chapman','moin-moin'],'Stews':['plain-white-rice','plantain-small','chapman'],'Starters':['chapman','puff-puff','jollof-rice-with-fried-chicken'],'Special Dishes':['malta-guinness','chapman','plantain-medium'],'Beans':['plantain-medium','chapman','puff-puff'],'Yam Dishes':['plantain-small','chapman','egusi-soup'],'Extras':['egusi-soup','eforiro-soup','ogbono-soup']};
+const pairsFor=d=>(PAIRS[d.cat]||(d.drink?['jollof-rice-with-fried-chicken','suya','puff-puff']:[]));
 const HEATL=['No heat','Mild','Medium','Hot!'];
-let dsId=null,dsQ=1,dsFocus=null;
+let dsId=null,dsQ=1,dsFocus=null,dsSize=null;
 function openDish(id){
-  const d=dishById(id);if(!d)return;dsId=id;dsQ=1;const first=$('#dishSheet').hidden;if(first)dsFocus=document.activeElement;
+  const d=realDish(id);if(!d)return;dsId=id;dsQ=1;dsSize=d.sizes&&Object.keys(d.sizes).length===1?Object.keys(d.sizes)[0]:null;const first=$('#dishSheet').hidden;if(first)dsFocus=document.activeElement;
   $('#dsArt').innerHTML=dishSVG(d);$('#dsArt').style.animation='none';void $('#dsArt').offsetWidth;$('#dsArt').style.animation='';
   $('#dsFav').hidden=!d.star;$('#dsCat').textContent=d.cat;$('#dsHeat').innerHTML=[1,2,3].map(i=>CHILI(i<=d.heat)).join('');$('#dsHeatL').textContent=HEATL[d.heat];
   $('#dsHeart').setAttribute('aria-pressed',isFav(id));$('#dsHeart').setAttribute('aria-label',(isFav(id)?'Remove ':'Save ')+d.name+(isFav(id)?' from':' to')+' favourites');
-  $('#dsName').textContent=d.name;$('#dsPrice').textContent=d.price||'';$('#dsDesc').textContent=d.desc;
-  $('#dsPair').innerHTML=(PAIRS[d.cat]||[]).filter(x=>x!==id).map(dishById).filter(Boolean).map(p=>`<button data-pair="${p.id}"><span class="mini">${dishSVG(p,{steam:false})}</span>${p.name}<small>${p.price}</small></button>`).join('');
+  $('#dsName').textContent=d.name;$('#dsPrice').textContent=d.price;$('#dsDesc').textContent=d.desc;$('#dsAllergy').textContent='Allergies: '+LIVE.allergy;
+  $('#dsOptsWrap').hidden=!d.sizes;$('#dsOpts').innerHTML=d.sizes?Object.entries(d.sizes).map(([o,p])=>`<button class="opt" role="radio" data-opt="${esc(o)}" aria-checked="false" ${isOff(d,o)?'disabled':''}>${esc(o)}<small>${isOff(d,o)?'Sold out':gbp(p/100)}</small></button>`).join(''):'';
+  $('#dsPair').innerHTML=pairsFor(d).filter(x=>x!==id).map(realDish).filter(p=>p&&!allOff(p)).map(p=>`<button data-pair="${p.id}"><span class="mini">${dishSVG(p,{steam:false})}</span>${p.name}<small>${p.price}</small></button>`).join('');
   dsSync();const sh=$('#dishSheet');sh.hidden=false;$('#sheetBox').style.transform='';$('#sheetBox').scrollTop=0;
   syncScroll();
   setTimeout(()=>$('#dsAdd').focus({preventScroll:true}),60);
 }
-function dsSync(){const d=dishById(dsId);$('#dsQty').textContent=dsQ;$('#dsAdd').textContent=`Add ${dsQ>1?dsQ+' ':''}· ${gbp(d.priceNum*dsQ)}`;$('#dsMinus').disabled=dsQ<=1;
-  const inB=cart[dsId]?.qty||0;$('#dsInBasket').textContent=inB?`Already in your basket: ${inB}`:''}
+function dsSync(){const d=realDish(dsId);if(!d)return;$('#dsQty').textContent=dsQ;$('#dsMinus').disabled=dsQ<=1;
+  $$('#dsOpts .opt').forEach(b=>{const on=b.dataset.opt===dsSize;b.setAttribute('aria-checked',on);b.setAttribute('aria-pressed',on)});
+  const sold=allOff(d)||(dsSize&&isOff(d,dsSize)),need=d.sizes&&!dsSize,each=(dsSize?d.sizes[dsSize]:d.pence)/100;
+  const add=$('#dsAdd');add.disabled=!!(sold||need);add.textContent=sold?'Sold out':need?'Choose an option':`Add ${dsQ>1?dsQ+' ':''}· ${gbp(each*dsQ)}`;
+  const inB=Object.values(cart).filter(c=>c.dish===dsId).reduce((a,c)=>a+c.qty,0);$('#dsInBasket').textContent=inB?`Already in your basket: ${inB}`:''}
+$('#dsOpts').onclick=e=>{const b=e.target.closest('[data-opt]');if(!b||b.disabled)return;dsSize=b.dataset.opt;dsSync()};
 function closeDish(){const sh=$('#dishSheet');if(sh.hidden)return;
   const box=$('#sheetBox'),done=()=>{sh.hidden=true;box.style.transform='';box.style.transition='';syncScroll();dsFocus&&dsFocus.focus&&dsFocus.focus({preventScroll:true})};
   if(reduced)return done();box.style.transition='transform .25s ease-in,opacity .25s';box.style.transform=matchMedia('(max-width:700px)').matches?'translateY(100%)':'scale(.94)';box.style.opacity='0';setTimeout(()=>{box.style.opacity='';done()},230)}
 $('#dsHeart').onclick=e=>toggleFav(dsId,e.currentTarget);
 $('#dsPlus').onclick=()=>{dsQ=Math.min(20,dsQ+1);dsSync();$('#dsQty').animate([{transform:'scale(1)'},{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:220})};
 $('#dsMinus').onclick=()=>{dsQ=Math.max(1,dsQ-1);dsSync();$('#dsQty').animate([{transform:'scale(1)'},{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:220})};
-$('#dsAdd').onclick=e=>{const id=dsId,n=dsQ;addToCart(id,e.currentTarget);if(n>1){cart[id].qty+=n-1;store.set('cart',cart);renderCart();toast(`${n} × ${dishById(id).name} added. ${pick(LINES[id]||GENERIC)}`)}setTimeout(closeDish,260)};
+$('#dsAdd').onclick=e=>{const d=realDish(dsId);if(!d||(d.sizes&&!dsSize))return;addToCart(dsId,e.currentTarget,dsSize,dsQ);setTimeout(closeDish,260)};
 $('#dsPair').onclick=e=>{const b=e.target.closest('[data-pair]');if(b)openDish(b.dataset.pair)};
 $('#dishSheet').addEventListener('click',e=>{if(e.target.closest('[data-sclose]'))closeDish()});
 $('#dishSheet').addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();closeDish()}});
@@ -1589,65 +1687,109 @@ $('#dishSheet').addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropag
 let lastFocus;
 function openOrder(){lastFocus=document.activeElement;document.body.classList.add('modal-open');$('#orderModal').classList.add('on');syncScroll();goStep(1);renderMList();renderReorder();try{document.activeElement&&document.activeElement.blur()}catch(e){}setTimeout(()=>{const x=$('#orderModal .m-head [data-close]');x&&x.focus({preventScroll:true})},50)}
 function closeOrder(){document.body.classList.remove('modal-open');$('#orderModal').classList.remove('on');syncScroll();lastFocus&&lastFocus.focus()}
-document.addEventListener('click',e=>{if(e.target.closest('[data-order]'))openOrder();if(e.target.closest('#orderModal [data-close]'))closeOrder()});
+document.addEventListener('click',e=>{if(e.target.closest('#chatTrack')&&activeOrder){openOrder();goStep(4);renderTrack();pollOrder(true);return}if(e.target.closest('[data-order]'))openOrder();if(e.target.closest('#orderModal [data-close]'))closeOrder()});
 $('#orderModal').addEventListener('keydown',e=>{if(e.key==='Escape')closeOrder()});
 $('#basketToggle').onclick=()=>$('#mBasket').classList.toggle('open');
 function goStep(n){[1,2,3,4].forEach(i=>{$('#mStep'+i).hidden=i!==n;const st=$('#st'+i);if(st)st.classList.toggle('on',i===n||(n===4&&i===3))})}
-$('#toDetails').onclick=()=>{if(!count())return;fillTimes();goStep(2);$('#oName').focus()};
+$('#toDetails').onclick=()=>{if(!count())return;fillTimes();
+  $('#oPhone').value=$('#oPhone').value||store.get('phone','');$('#oName').value=$('#oName').value||store.get('name','');
+  const pay=store.get('pay','card');$$('input[name=pay]').forEach(r=>r.checked=r.value===pay);
+  $('#oAllergy').textContent='Allergies: '+LIVE.allergy;
+  const cw=$('#closedWarn');cw.hidden=LIVE.open;cw.textContent='Sorry, online ordering is closed right now. You can still look around the menu.';goStep(2)};
 $('#back1').onclick=()=>goStep(1);$('#back2').onclick=()=>goStep(2);
 function fillTimes(){
   const sel=$('#oTime');const prev=sel.value;const now=new Date();const s=status();let opts=['<option value="ASAP">As soon as possible</option>'];
   const t=new Date(now.getTime()+30*6e4);t.setMinutes(Math.ceil(t.getMinutes()/15)*15,0,0);
   for(let i=0;i<16;i++){const x=new Date(t.getTime()+i*15*6e4);const v=x.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/London'});opts.push(`<option>${v}</option>`)}
   sel.innerHTML=opts.join('');if(prev)sel.value=prev;
-  if(!s.open)toast(`Heads up: we're closed right now. We open ${s.label}.`);
 }
-function orderText(){
-  const L=LOCS[$('#mLoc').value];let t=`Hi A.G.G's! New pick-up order (${L.name}):\n\n`;
-  Object.values(cart).forEach(c=>t+=`• ${c.qty} × ${c.name}${c.custom?` (${c.sub})`:''}  ${gbp(unit(c)*c.qty)}\n`);
-  const n=$('#oName').value.trim(),p=$('#oPhone').value.trim(),tm=$('#oTime').value,no=$('#oNote').value.trim();
-  const T=totals();t+=`\nSubtotal: ${gbp(T.sub)}${T.lunch?`\nLunch deal: -${gbp(T.lunch)}`:''}\nTotal: ${gbp(T.total)} (pay on collection)`;
-  t+=`\n\nName: ${n||'-'}\nPhone: ${p||'-'}\nPick-up: ${tm}`;if(no)t+=`\nNotes: ${no}`;return t;
-}
+const ukMobile=v=>{let d=String(v||'').replace(/\D/g,'');if(d.startsWith('00'))d=d.slice(2);if(d.startsWith('0'))d='44'+d.slice(1);return/^447\d{9}$/.test(d)?d:null};
+const payChoice=()=>($('input[name=pay]:checked')||{}).value||'card';
+function orderNotes(){const tm=$('#oTime').value,no=$('#oNote').value.trim();return[tm&&tm!=='ASAP'?'Pick-up '+tm:'Pick-up ASAP',no].filter(Boolean).join('. ').slice(0,200)}
+function orderText(){let t='';
+  Object.values(cart).forEach(c=>t+=`${c.qty} × ${c.size?c.size+' ':''}${c.name}  ${gbp(unit(c)*c.qty)}\n`);
+  t+=`\nTotal: ${gbp(totals().total)}\n${payChoice()==='card'?'Payment: card now (SumUp)':'Payment: on collection'}\n\nName: ${$('#oName').value.trim()||'-'}\nWhatsApp: ${$('#oPhone').value.trim()}\n${orderNotes()}`;return t}
 $('#toSend').onclick=()=>{
-  if(!$('#oName').value.trim()){$('#oName').focus();toast('Please add your name');return}
-  const L=LOCS[$('#mLoc').value],txt=orderText();$('#receipt').textContent=txt;
-  const b=$('#sendBtn');
-  $('#sendHint').textContent=`Check your order, then place it with our ${L.name} kitchen. Pay when you collect.`;
-  if(L.wa){b.href=`https://wa.me/${L.wa}?text=${encodeURIComponent(txt)}`;b.textContent='Send on WhatsApp'}
-  else{b.href=`tel:${L.phone}`;b.textContent=`Call ${L.name}`}
+  if(!ukMobile($('#oPhone').value)){$('#oPhone').focus();toast('Please enter a UK mobile number (07…)');return}
+  $('#receipt').textContent=orderText();$('#sendErr').hidden=true;
+  $('#sendHint').innerHTML=`We'll send this to your WhatsApp. Tap <b>Confirm order</b> there${payChoice()==='card'?', then pay by card. The kitchen gets it once it\u2019s paid.':' and it goes straight to the kitchen. Pay when you collect.'}`;
+  const b=$('#placeOrder');b.disabled=!LIVE.open;b.textContent=LIVE.open?'Send order':'Closed right now';
   goStep(3);
 };
-$('#sendBtn').onclick=()=>{store.set('last',cart);recordOrder();setTimeout(()=>{toast('Order sent. Thank you!');},400)};
-// DEMO: simulated order placement + live tracker
-const STAGES=[['Order received','The kitchen has your order'],['Preparing','Fresh ingredients on the board'],['Cooking','On the fire now'],['Ready for pick-up','Come and get it while it\u2019s hot!']];
-let trackTimer;
-$('#placeDemo').onclick=()=>{recordOrder();
-  const L=LOCS[$('#mLoc').value],no='AGG-'+Math.floor(1000+Math.random()*9000),T=totals(),first=Object.values(cart)[0];
-  const order={no,loc:L.name,total:T.total,items:count(),t:Date.now(),name:$('#oName').value.trim(),pickup:$('#oTime').value};
-  store.set('order',order);store.set('last',cart);
-  $('#confNo').textContent=no;$('#confSub').textContent=`${order.items} item${order.items>1?'s':''} · ${gbp(T.total)} to pay on collection · ${L.name}${order.pickup&&order.pickup!=='ASAP'?' · pick-up '+order.pickup:''}`;
-  $('#confArt').innerHTML=dishSVG(dishById(first.dish)||DISHES[3]);
-  cart={};store.set('cart',cart);renderCart();goStep(4);confetti($('#mStep4'));renderTrack();
+let sending=false;
+$('#placeOrder').onclick=async()=>{if(sending||!count())return;sending=true;const b=$('#placeOrder'),err=$('#sendErr');b.disabled=true;b.textContent='Sending…';err.hidden=true;
+  const payment=payChoice(),phone=$('#oPhone').value.trim(),name=$('#oName').value.trim();
+  const items=Object.values(cart).filter(c=>c.qty>0).map(c=>({name:c.name,size:c.size||undefined,quantity:c.qty}));
+  try{
+    const r=await fetch(AGGS_API,{method:'POST',headers:{...AGGS_HDR,'Content-Type':'application/json'},body:JSON.stringify({phone,name:name||undefined,items,notes:orderNotes(),payment,return_url:location.origin+location.pathname})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok||!j.ok)throw new Error(j.error||'We couldn\u2019t send your order. Please try again or call us.');
+    store.set('phone',phone);if(name)store.set('name',name);store.set('pay',payment);
+    const first=Object.values(cart)[0];
+    activeOrder={draft:j.ref,t:Date.now(),payment:j.payment_choice||payment,total:(j.total_pence??Math.round(totals().total*100))/100,items:count(),art:first&&first.dish,stage:'draft'};
+    store.set('order',activeOrder);store.set('last',cart);recordOrder();
+    cart={};store.set('cart',cart);renderCart();goStep(4);confetti($('#mStep4'));Snd.ui('milestone');renderTrack();pollOrder(true);
+  }catch(e){err.textContent=e.message||String(e);err.hidden=false;if(/fetch|network|load/i.test(err.textContent))err.textContent='No connection to the kitchen right now. Check your signal and try again.'}
+  finally{sending=false;b.disabled=!LIVE.open;b.textContent='Send order'}
 };
-function stageOf(o){if(!o)return-1;return Math.min(3,Math.floor((Date.now()-o.t)/6000))} // demo: each stage lasts 6 seconds
-function renderTrack(){const o=store.get('order',null),st=stageOf(o);
-  $('#track').innerHTML=STAGES.map(([a,b],i)=>`<div class="trk ${i<st||st===3?'done':i===st?'now':''}"><span class="b">${i<st||st===3?'✓':i+1}</span><div><b>${a}</b><small>${b}</small></div></div>`).join('');
-  clearTimeout(trackTimer);if(st<3&&$('#orderModal').classList.contains('on'))trackTimer=setTimeout(renderTrack,1000);if(st===3)toast(`Order ${o.no} is ready!`)}
-$('#copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(orderText());toast('Order copied')}catch(e){toast('Copy not available here')}};
+// LIVE order tracking (aggs-web status: draft → awaiting_payment → sent)
+let activeOrder=store.get('order',null);if(activeOrder&&!activeOrder.draft)activeOrder=null;
+const FINAL=['sent','rejected','expired'];
+const orderLive=o=>o&&o.draft&&Date.now()-o.t<6*3600e3;
+let pollTimer=null,lastStage=null;
+function stepsFor(o){const card=o.payment==='card';const st=o.stage;
+  const S=[['Order sent','We\u2019ve sent it to your WhatsApp'],['Confirm on WhatsApp','Tap \u201cConfirm order\u201d in the message']];
+  if(card)S.push(['Pay by card','Secure SumUp payment']);
+  S.push(['In the kitchen',card?'Paid by card. We\u2019re cooking!':'Pay when you collect. We\u2019re cooking!']);
+  const at=st==='draft'?1:st==='awaiting_payment'?2:st==='sent'?S.length:1;return{S,at}}
+function renderTrack(){const o=activeOrder;if(!o)return;const{S,at}=stepsFor(o);const bad=o.stage==='rejected'||o.stage==='expired';
+  $('#confArt').innerHTML=dishSVG(realDish(o.art)||DISHES[0]);
+  $('#confTitle').textContent=o.stage==='sent'?'In the kitchen!':o.stage==='awaiting_payment'?'Confirmed. Now pay':o.stage==='expired'?'Order not confirmed':o.stage==='rejected'?'Order not accepted':'Check your WhatsApp';
+  $('#confSub').textContent=`${o.ref?o.ref+' · ':''}${o.items?o.items+' item'+(o.items>1?'s':'')+' · ':''}${gbp(o.total)} · ${o.payment==='card'?(o.paid?'paid by card':'pay by card'):'pay on collection'}`;
+  $('#track').innerHTML=bad?'':S.map(([a,b],i)=>`<div class="trk ${i<at||at===S.length?'done':i===at?'now':''}"><span class="b">${i<at||at===S.length?'✓':i+1}</span><div><b>${a}</b><small>${b}</small></div></div>`).join('');
+  let act='';
+  if(o.stage==='awaiting_payment')act=o.pay_url?`<a class="btn btn-grad" href="${esc(o.pay_url)}" rel="noopener">Pay ${gbp(o.total)} with SumUp</a><small class="note">We also sent the payment link to your WhatsApp.</small>`:`<small class="note">Your SumUp payment link is on its way to your WhatsApp…</small>`;
+  else if(o.stage==='draft')act=`<small class="note">No message? Check the number you entered, or call the shop. ${o.payment==='card'?'You\u2019ll pay by card after confirming.':''}</small>`;
+  else if(o.stage==='expired')act=`<small class="note">The WhatsApp confirmation timed out, so nothing went to the kitchen.</small><button class="btn btn-dark" id="trkAgain">Order again</button>`;
+  else if(o.stage==='rejected')act=`<small class="note">Sorry, the kitchen couldn\u2019t take this order. Please call us.</small>`;
+  else if(o.stage==='sent')act=`<small class="note">Show your order number ${o.ref?'<b>'+esc(o.ref)+'</b> ':''}when you collect.</small>`;
+  $('#trackAct').innerHTML=`<div class="trk-act">${act}</div>`;
+  const ag=$('#trkAgain');if(ag)ag.onclick=()=>{const last=store.get('last',{});Object.entries(last).forEach(([k,c])=>{const d=realDish(c.dish);if(d){cart[k]=cart[k]||{...c,qty:0};cart[k].qty+=c.qty}});store.set('cart',cart);renderCart();goStep(1)};
+}
+async function pollOrder(now){clearTimeout(pollTimer);const o=activeOrder;if(!orderLive(o)||FINAL.includes(o.stage)&&!now)return;
+  const tick=async()=>{try{const r=await fetch(AGGS_API,{method:'POST',headers:{...AGGS_HDR,'Content-Type':'application/json'},body:JSON.stringify({action:'status',draft:o.draft})});
+      const j=await r.json();if(j&&j.stage&&activeOrder===o){Object.assign(o,{stage:j.stage,ref:j.ref||o.ref,pay_url:j.pay_url||null,paid:j.payment_status==='paid',total:j.total_pence!=null?j.total_pence/100:o.total,payment:j.payment_choice||o.payment});store.set('order',o);
+        if(lastStage&&lastStage!==o.stage){Snd.ui('milestone');toast(o.stage==='sent'?'Your order is in the kitchen!':o.stage==='awaiting_payment'?'Confirmed! Tap to pay by card.':'Order update')}lastStage=o.stage;renderTrack();renderReorder&&$('#orderModal').classList.contains('on')&&$('#mStep1').hidden===false&&renderReorder()}}catch(e){}
+    if(!FINAL.includes(o.stage)&&orderLive(o))pollTimer=setTimeout(tick,document.hidden?20000:7000)};
+  if(now)tick();else pollTimer=setTimeout(tick,7000)}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&activeOrder&&!FINAL.includes(activeOrder.stage))pollOrder(true)});
+function resumeOrder(draft){if(!activeOrder||activeOrder.draft!==draft)activeOrder={draft,t:Date.now(),payment:'card',total:0,stage:'draft'};store.set('order',activeOrder);
+  openOrder();goStep(4);renderTrack();pollOrder(true)}
+function stageOf(){return activeOrder?activeOrder.stage:null}
 function renderReorder(){
   const last=store.get('last',null),h=store.get('history',{});
   const lastItems=last?Object.values(last).filter(c=>c.qty>0):[];
-  const usual=Object.entries(h).filter(([id])=>dishById(id)).sort((a,b)=>b[1].n-a[1].n||b[1].last-a[1].last).slice(0,8).map(([id])=>dishById(id));
+  const usual=Object.entries(h).filter(([id])=>realDish(id)).sort((a,b)=>b[1].n-a[1].n||b[1].last-a[1].last).slice(0,8).map(([id])=>realDish(id));
   let html='';
+  if(orderLive(activeOrder)&&activeOrder.stage!=='expired'){const o=activeOrder;html+=`<button class="track-pill" id="trackPill">📍 <span><b>Track your order</b> · ${o.stage==='sent'?'in the kitchen':o.stage==='awaiting_payment'?'waiting for card payment':o.stage==='rejected'?'not accepted':'waiting for WhatsApp confirm'}</span></button>`}
   if(lastItems.length){const n=lastItems.reduce((a,c)=>a+c.qty,0),t=lastItems.reduce((a,c)=>a+unit(c)*c.qty,0);
     html+=`<button class="reorder-pill" id="reorder"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg><span><b>Reorder last order</b> · ${n} item${n>1?'s':''} · ${gbp(t)}</span></button>`}
   if(usual.length)html+=`<div class="usual-h">Your usuals</div><div class="usual-strip">${usual.map(d=>`<div class="usual" data-open="${d.id}"><span class="mini">${dishSVG(d,{steam:false})}</span><b>${d.name.replace(/ \(.*\)/,'')}</b><small>${d.price}</small><button class="plus" data-madd="${d.id}" aria-label="Add ${esc(d.name)}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>`).join('')}</div>`;
   $('#reorderBox').innerHTML=html;
-  const b=$('#reorder');if(b)b.onclick=()=>{Object.entries(last).forEach(([k,c])=>{if(!cart[k])cart[k]={...c,qty:0};cart[k].qty+=c.qty});store.set('cart',cart);renderCart();Snd.ui('add',count());toast('Last order is back in the basket. Same again, chef!');if(matchMedia('(max-width:820px)').matches)$('#mBasket').classList.add('open')};
+  const tp=$('#trackPill');if(tp)tp.onclick=()=>{goStep(4);renderTrack();pollOrder(true)};
+  const b=$('#reorder');if(b)b.onclick=()=>{Object.entries(last).forEach(([k,c])=>{const d=realDish(c.dish);if(!d||(c.size&&!d.sizes?.[c.size])||isOff(d,c.size))return;if(!cart[k])cart[k]={...c,qty:0,price:(c.size?d.sizes[c.size]:d.pence)/100};cart[k].qty+=c.qty});store.set('cart',cart);renderCart();Snd.ui('add',count());toast('Last order is back in the basket. Same again, chef!');if(matchMedia('(max-width:820px)').matches)$('#mBasket').classList.add('open')};
 }
+async function loadLiveMenu(){try{
+  const r=await fetch(AGGS_API,{headers:AGGS_HDR,cache:'no-store'});if(!r.ok)throw 0;const j=await r.json();
+  if(Array.isArray(j.menu)&&j.menu.length){setMenu(j.menu);LIVE.ok=true}
+  LIVE.open=j.open!==false;if(j.allergy)LIVE.allergy=j.allergy;LIVE.off=Array.isArray(j.off)?j.off:[];LIVE.loaded=true;
+  menuBuilt=false;mBuilt=false;buildChips();if(menuInit)renderMenu();renderMList();reconcileCart();renderCart();
+  if($('#orderModal').classList.contains('on')&&!$('#mStep1').hidden)renderReorder();
+  if(curRoute==='favourites')renderFavs();
+}catch(e){LIVE.loaded=true}}
+setTimeout(loadLiveMenu,300);setInterval(()=>{if(!document.hidden)loadLiveMenu()},5*60e3);
+if(activeOrder&&orderLive(activeOrder)&&!FINAL.includes(activeOrder.stage))setTimeout(()=>pollOrder(true),1500);
 $('#reorderBox').addEventListener('click',e=>{const a=e.target.closest('[data-madd]');if(a){addToCart(a.dataset.madd,a);return}const u=e.target.closest('[data-open]');if(u)openDish(u.dataset.open)});
-$('#mLoc').onchange=()=>{store.set('loc',$('#mLoc').value)};
 renderCart();
 
 /* =====================================================================
@@ -1667,7 +1809,7 @@ function renderStatus(){const s=status();$('#statusPill').className='pill '+(s.o
 renderStatus();setInterval(renderStatus,30000);
 const ICON={phone:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>',wa:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8 18.7z"/></svg>'};
 function setLoc(k){const L=LOCS[k];$$('[data-loc]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.loc===k));$('#locName').textContent=L.name;$('#locAddr').textContent=L.addr;$('#locMap').href=L.map;
-  $('#locContacts').innerHTML=L.contacts.map(([l,n,d,t])=>`<a href="${t==='wa'?'https://wa.me/'+n:'tel:'+n}" ${t==='wa'?'target="_blank" rel="noopener"':''}>${ICON[t||'phone']}${d}<span>${l}</span></a>`).join('');$('#mLoc').value=k;store.set('loc',k)}
+  $('#locContacts').innerHTML=L.contacts.map(([l,n,d,t])=>`<a href="${t==='wa'?'https://wa.me/'+n:'tel:'+n}" ${t==='wa'?'target="_blank" rel="noopener"':''}>${ICON[t||'phone']}${d}<span>${l}</span></a>`).join('');store.set('loc',k)}
 $$('[data-loc]').forEach(b=>b.onclick=()=>setLoc(b.dataset.loc));setLoc(store.get('loc','coventry'));
 
 /* =====================================================================
@@ -2160,20 +2302,20 @@ function ask(q){add(esc(q),'me');botSay(answer(q))}
 function answer(q){
   const t=q.toLowerCase(),s=status();
   const has=(...w)=>w.some(x=>t.includes(x));
-  if(has('track','where is my','status','my order','ready yet','is it ready')){const o=store.get('order',null);if(!o)return`You don't have an active order yet.<div class="act"><button class="btn btn-dark btn-sm" data-order>Start an order</button></div>`;const st=stageOf(o);return`Order <b>${o.no}</b> (${o.loc}): <b>${STAGES[st][0]}</b>. ${STAGES[st][1]}.`}
+  if(has('track','where is my','status','my order','ready yet','is it ready')){const o=activeOrder;if(!orderLive(o))return`You don't have an active order right now.<div class="act"><button class="btn btn-dark btn-sm" data-order>Start an order</button></div>`;pollOrder(true);const lbl={draft:'waiting for you to tap <b>Confirm order</b> on WhatsApp',awaiting_payment:'confirmed, waiting for your <b>card payment</b>',sent:'<b>in the kitchen</b>',expired:'<b>not confirmed</b> in time, so nothing was sent',rejected:'<b>not accepted</b>. Please call us'}[o.stage]||'being checked';return`Your order${o.ref?' <b>'+esc(o.ref)+'</b>':''} is ${lbl}.<div class="act"><button class="btn btn-dark btn-sm" id="chatTrack">Open tracker</button></div>`}
   const mentioned=DISHES.find(d=>t.includes(d.name.toLowerCase().split(' (')[0])||t.includes(d.id));
   if(has('hello','hi ','hey','good morning','good evening')&&t.length<14)return'Hello! How can I help? You can ask about dishes, opening hours, or how to order.';
   if(has('open','close','hour','time','today','tonight','late'))return`${s.open?`Yes, we're <b>open now</b> until ${fmt(s.closeAt)}.`:`We're closed right now. We open <b>${s.label}</b>.`}<br><br>Mon–Thu 12pm–midnight<br>Fri–Sat 12pm–2am<br>Sun 2pm–midnight<div class="act"><a href="#/visit">See both branches →</a></div>`;
   if(has('where','address','locat','direction','find you','coventry','leicester','postcode','map'))return`We have two branches:<br><br><b>Coventry</b><br>35 Far Gosford St, CV1 5DW<br><a href="${LOCS.coventry.map}" target="_blank" rel="noopener">Directions</a><br><br><b>Leicester</b><br>24 Pocklingtons Walk, LE1 6BU<br><a href="${LOCS.leicester.map}" target="_blank" rel="noopener">Directions</a>`;
   if(has('phone','call','number','contact','email','whatsapp'))return`Coventry: <a href="tel:02476222201">024 7622 2201</a><br>Takeaway: <a href="tel:07572985321">07572 985321</a><br>WhatsApp: <a href="https://wa.me/447448930999" target="_blank" rel="noopener">07448 930999</a><br>Leicester: <a href="tel:01165072857">0116 507 2857</a><br>Email: <a href="mailto:info@aggsworld.co.uk">info@aggsworld.co.uk</a>`;
-  if(has('order','takeaway','take away','collect','pick up','pickup','basket'))return`You can order right here: pick your dishes, add your pick-up time, and we'll send the order straight to our kitchen on WhatsApp.<div class="act"><button class="btn btn-dark btn-sm" data-order>Open the order screen</button></div>`;
+  if(has('order','takeaway','take away','collect','pick up','pickup','basket'))return`You can order right here: pick your dishes and pick-up time, choose <b>pay by card now</b> (SumUp) or <b>pay on collection</b>, then tap Confirm on the WhatsApp we send you. It goes straight to our kitchen.<div class="act"><button class="btn btn-dark btn-sm" data-order>Open the order screen</button></div>`;
   if(has('deliver','uber','just eat','deliveroo'))return`For delivery options, the quickest way is to message our team on WhatsApp and they'll let you know what's available today.<div class="act"><a class="btn btn-dark btn-sm" href="${waLink('do you deliver to my area?')}" target="_blank" rel="noopener">Ask on WhatsApp</a></div>`;
   if(mentioned)return`<b>${mentioned.name}</b> · ${mentioned.price}<br>${mentioned.desc}<br>Heat: ${'🌶'.repeat(mentioned.heat)||'none'}<div class="act"><button class="btn btn-dark btn-sm" data-chatadd="${mentioned.id}">Add to order</button></div>`;
   if(has('recommend','suggest','best','popular','favourite','favorite','what should','first time'))return`Our house favourites are <b>Smoky Party Jollof</b>, <b>Egusi Soup</b> with pounded yam, and <b>Asun</b> if you like it hot. Not sure? Try the Dish Matcher: three taps and you get a pick.<div class="act"><a class="btn btn-dark btn-sm" href="#/">Try the Dish Matcher</a></div>`;
   if(has('spicy','hot','pepper','heat','mild'))return`Hottest: ${DISHES.filter(d=>d.heat===3).map(d=>d.name).join(', ')}.<br>Gentle: ${DISHES.filter(d=>d.heat<=1&&!['Drinks','Extras'].includes(d.cat)).slice(0,5).map(d=>d.name).join(', ')}.<br>Tip: use the heat dial on the Menu page to filter.`;
   if(has('vegetarian','vegan','veg','meat free','plant'))return`Some dishes, like moi moi, dodo, puff-puff and beans, can be made meat-free, but recipes vary. Please check with our team so they can confirm what's suitable for you today.<div class="act"><a class="btn btn-dark btn-sm" href="${waLink('which dishes are vegetarian/vegan today?')}" target="_blank" rel="noopener">Ask the team</a></div>`;
   if(has('allerg','nut','gluten','halal','dairy','shellfish','ingredient'))return`For allergies and dietary needs (including halal), please speak with our team before ordering so they can give you accurate information.<div class="act"><a class="btn btn-dark btn-sm" href="${waLink('I have a question about allergens/dietary needs: ')}" target="_blank" rel="noopener">Message the team</a></div>`;
-  if(has('price','cost','how much','£','cheap','deal','discount','lunch'))return`Mains are ${gbp(Math.min(...DISHES.filter(d=>['Rice Menu','Soup Dishes','Special Dishes','Stew Dishes'].includes(d.cat)).map(d=>d.priceNum)))}–${gbp(Math.max(...DISHES.map(d=>d.priceNum)))}, starters from ${gbp(4)} and drinks from ${gbp(2.5)}. Between 12pm and 3pm you get <b>£1 off</b>, applied automatically at checkout. (Demo prices.)<div class="act"><a class="btn btn-dark btn-sm" href="#/menu">See the menu</a></div>`;
+  if(has('price','cost','how much','£','cheap','deal','discount','lunch')){const mains=DISHES.filter(d=>['Rice','Soups','Special Dishes','Stews','Yam Dishes','Beans'].includes(d.cat)&&d.pence>=500).map(d=>d.pence/100);return`Mains are about ${gbp(Math.min(...mains))}–${gbp(Math.max(...mains))}, starters from ${gbp(Math.min(...DISHES.filter(d=>d.cat==='Starters').map(d=>d.priceNum)))} and drinks from ${gbp(Math.min(...DISHES.filter(d=>d.drink).map(d=>d.priceNum)))}. Prices on the site come live from our kitchen menu. Pay by card online (SumUp) or when you collect.<div class="act"><a class="btn btn-dark btn-sm" href="#/menu">See the menu</a></div>`}
   if(has('book','reserv','table','party','event','birthday','group','cater'))return`We'd love to host you! For table bookings, parties and catering, message our team and they'll sort it out.<div class="act"><a class="btn btn-dark btn-sm" href="${waLink('I\u2019d like to ask about a booking/event: ')}" target="_blank" rel="noopener">Enquire on WhatsApp</a></div>`;
   if(has('job','work','vacanc','hiring','career','apply'))return`We post job vacancies on our main website. You can also email your CV to <a href="mailto:info@aggsworld.co.uk">info@aggsworld.co.uk</a>.`;
   if(has('menu','dish','food','eat','soup','rice','swallow','drink'))return`We serve starters, rice dishes, soups, beans, specials, stews, yam dishes, extras and drinks: 30 dishes in all.<div class="act"><a class="btn btn-dark btn-sm" href="#/menu">See the menu</a></div>`;
