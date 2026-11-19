@@ -308,12 +308,11 @@ canvas#game{width:100%;aspect-ratio:3/2;border-radius:18px;display:block;touch-a
 #gExit{display:inline-flex;align-items:center;gap:6px;border-color:#e85a30;color:#ff8a6b}
 .tabbar,.nav,.chat-fab{transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .3s}
 @media(max-width:700px){
-  body.playing{overflow:hidden}
   body.playing .tabbar{transform:translateY(120%)!important}
   body.playing .nav{transform:translateY(-160%);opacity:0;pointer-events:none}
   body.playing .chat-fab,body.playing .chat,body.playing .demo-bar{display:none}
-  body.playing .game-shell{position:fixed;inset:0;z-index:110;border-radius:0;border:0;margin:0;padding:calc(8px + env(safe-area-inset-top)) 8px calc(8px + env(safe-area-inset-bottom));display:flex;flex-direction:column;justify-content:center;background:var(--bg)}
-  body.playing canvas#game{width:auto;max-width:100%;max-height:calc(100dvh - 140px);margin:0 auto}
+  body.playing .game-shell{position:fixed;inset:0;z-index:110;border-radius:0;border:0;margin:0;padding:calc(6px + env(safe-area-inset-top)) 8px calc(8px + env(safe-area-inset-bottom));display:flex;flex-direction:column;justify-content:flex-start;background:var(--bg);overscroll-behavior:contain}
+  body.playing canvas#game{aspect-ratio:auto;width:100%;height:auto;max-height:none;margin:0;flex:none}
   html.in-frame body.playing .game-shell{padding-top:44px;padding-bottom:24px}
 }
 .howto{width:100%;max-width:560px;display:grid;gap:12px}
@@ -1655,7 +1654,12 @@ function drawItem(ctx,t,x,y,r,rot){
   ctx.restore();
 }
 function initGame(){
-  const cv=$('#game'),mobile=matchMedia('(max-width:700px)').matches;cv.width=mobile?600:900;cv.height=mobile?900:600;const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+  const cv=$('#game'),mobile=matchMedia('(max-width:700px)').matches;cv.width=mobile?600:900;cv.height=mobile?900:600;const ctx=cv.getContext('2d');let W=cv.width,H=cv.height;
+  // On phones the play area is shaped to fill the screen exactly (no empty bands)
+  function fitCanvas(){if(!matchMedia('(max-width:700px)').matches)return;const sh=$('.game-shell'),cs=getComputedStyle(sh),hud=$('.game-hud').offsetHeight;
+    const aw=sh.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),ah=sh.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom)-hud-4;
+    if(aw<100||ah<100)return;const nh=Math.round(Math.min(1500,Math.max(760,600*ah/aw)));if(cv.width!==600||cv.height!==nh){cv.width=600;cv.height=nh;W=600;H=nh;if(pot)pot.x=Math.min(pot.x,W-pot.w/2)}}
+  addEventListener('resize',()=>{if(G.running)fitCanvas()});
   const icon=t=>{const c=document.createElement('canvas');c.width=c.height=40;drawItem(c.getContext('2d'),t,20,20,13,0);return`<img src="${c.toDataURL()}" width="22" height="22" alt="">`};
   $('#legend').innerHTML='<span class="lg-h">Catch these</span>'+[['tomato','Tomato','+1'],['pepper','Pepper','+1'],['onion','Onion','+1'],['rice','Rice','+2'],['cube','Stock cube','+5 &amp; slow-mo'],['heart','Heart','+1 life'],['quiz','Question','bonus quiz']].map(([t,n,p])=>`<span class="good">${icon(t)}${n}<em>${p}</em></span>`).join('')
     +'<span class="lg-h">Avoid these</span>'+[['fly','Fly','−1 life'],['stone','Stone','−1 life'],['bomb','Bomb','game over!']].map(([t,n,p])=>`<span class="bad">${icon(t)}${n}<em>${p}</em></span>`).join('');
@@ -1668,7 +1672,7 @@ function initGame(){
     else if(level>=2&&!items.some(i=>i.t==='bomb')&&Math.random()<Math.min(.04+level*.012,.12))t='bomb';
     else if(lives<3&&!items.some(i=>i.t==='heart')&&Math.random()<(lives===1?.09:.05))t='heart';
     else if(r<bad)t=Math.random()<.6?'fly':'stone';else if(r<bad+.05)t='cube';else t=['tomato','pepper','onion','rice'][Math.floor(Math.random()*4)];
-    items.push({t,x:40+Math.random()*(W-80),y:-30,r:t==='rice'?22:t==='heart'||t==='quiz'||t==='bomb'?24:20,vy:(140+level*28)*(t==='heart'||t==='quiz'?.75:0.85+Math.random()*.3),vx:t==='fly'?(Math.random()-.5)*120:0,rot:t==='fly'?Math.PI:t==='heart'||t==='quiz'||t==='bomb'?0:Math.random()*6,vr:(Math.random()-.5)*3})}
+    items.push({t,x:40+Math.random()*(W-80),y:-30,r:t==='rice'?22:t==='heart'||t==='quiz'||t==='bomb'?24:20,vy:Math.max(1,H/900)*(140+level*28)*(t==='heart'||t==='quiz'?.75:0.85+Math.random()*.3),vx:t==='fly'?(Math.random()-.5)*120:0,rot:t==='fly'?Math.PI:t==='heart'||t==='quiz'||t==='bomb'?0:Math.random()*6,vr:(Math.random()-.5)*3})}
   function burst(x,y,c,n=14){for(let i=0;i<n;i++)parts.push({x,y,vx:(Math.random()-.5)*360,vy:-Math.random()*320,life:.7,c})}
   function loop(ts){
     if(!G.running)return;if(G.paused){last=ts;requestAnimationFrame(loop);return}
@@ -1745,7 +1749,7 @@ function initGame(){
   function over(reason){G.running=false;G.setPlaying(false);requestAnimationFrame(()=>$('.game-shell').scrollIntoView({block:'center'}));G.boom=false;Snd.stopMusic();if(reason!=='bomb')Snd.play('over');const best=store.get('best',0);const nb=score>best;if(nb)store.set('best',score);$('#best').textContent=Math.max(best,score);
     $('#ovTitle').textContent=reason==='bomb'?(nb?'BOOM! But that\u2019s a new best!':'BOOM! Your pot exploded'):(nb?'New personal best!':'Pot overflowed!');$('#ovText').textContent=`You scored ${score} and reached level ${level}.${nb?' Add your name to the leaderboard.':''}`;
     $('#howto').hidden=true;$('#ovText').hidden=false;$('#ovName').hidden=false;$('#ovName').style.display='flex';$('#gStart').textContent='Play again';$('#ovBest').textContent=`Your best: ${Math.max(best,score)}`;$('#ovBest').textContent=`Your best: ${Math.max(best,score)}`;$('#gOverlay').hidden=false;G.lastScore=score;if(nb)confetti($('.game-shell'));setTimeout(()=>$('#pName').focus(),50)}
-  function start(){reset();G.setPlaying(true);$('#gQuit').hidden=true;cv.scrollIntoView({block:'center',behavior:reduced?'auto':'smooth'});Snd.init();Snd.play('start');Snd.setTempo(1);if(Snd.st.music)Snd.startMusic();$('#gOverlay').hidden=true;$('#ovName').hidden=true;$('#ovName').style.display='none';G.running=true;G.paused=false;$('#gPause').textContent='Pause';last=0;cv.focus({preventScroll:true});requestAnimationFrame(loop)}
+  function start(){G.setPlaying(true);fitCanvas();reset();$('#gQuit').hidden=true;if(!matchMedia('(max-width:700px)').matches)cv.scrollIntoView({block:'center',behavior:reduced?'auto':'smooth'});Snd.init();Snd.play('start');Snd.setTempo(1);if(Snd.st.music)Snd.startMusic();$('#gOverlay').hidden=true;$('#ovName').hidden=true;$('#ovName').style.display='none';G.running=true;G.paused=false;$('#gPause').textContent='Pause';last=0;cv.focus({preventScroll:true});requestAnimationFrame(loop)}
   // ---- bonus question when a ? lands in the pot ----
   function openQuiz(){
     const pool=QUIZ.map((q,i)=>i).filter(i=>!asked.has(i));if(!pool.length)asked.clear();
