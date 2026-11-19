@@ -764,7 +764,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between}
                   <div><b>3 · Level up</b><span>A full pot = next level, faster and trickier</span></div>
                 </div>
                 <div class="legend" id="legend"></div>
-                <p style="font-size:13px;margin:0">Catch in a row to build a <b style="color:var(--gold)">combo</b> (up to ×5 points). Miss one and it resets. You have 3 lives.</p>
+                <p style="font-size:13px;margin:0">Catch in a row to build a <b style="color:var(--gold)">combo</b> (up to ×5 points). Miss one and it resets. You have 3 lives, and a <b style="color:#ff4d6d">heart</b> drops now and then to win one back.</p>
               </div>
               <div id="ovName" hidden style="display:none;gap:8px;flex-wrap:wrap;justify-content:center"><label class="sr" for="pName">Your name</label><input id="pName" maxlength="14" placeholder="Your name"><button class="btn btn-grad" id="saveScore">Save score</button></div>
               <button class="btn btn-grad" id="gStart">Play Jollof Rush</button>
@@ -780,7 +780,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between}
         <aside style="display:grid;gap:16px">
           <div class="card lb"><h4 style="font-size:18px">Leaderboard</h4><p class="note">Saved on this device</p><ol id="board"></ol></div>
           <div class="card widget"><h4>Your best</h4><div class="big-num" id="best">0</div><button class="btn btn-ghost btn-sm" id="shareScore" style="margin-top:10px">Share my score</button></div>
-          <div class="card widget"><h4>How to play</h4><p class="note" style="font-size:14px;color:var(--ink2)">Consecutive catches build your combo multiplier, up to ×5. Missing a good ingredient resets it. Catching a fly or stone costs a life.</p></div>
+          <div class="card widget"><h4>How to play</h4><p class="note" style="font-size:14px;color:var(--ink2)">Consecutive catches build your combo multiplier, up to ×5. Missing a good ingredient resets it. Catching a fly or stone costs a life. Catch a falling heart to win a life back (up to 3).</p></div>
         </aside>
       </div>
     </div>
@@ -1377,7 +1377,7 @@ let fi=Math.floor(Math.random()*FACTS.length);const showFact=()=>{$('#factText')
 /* =====================================================================
    GAME: JOLLOF RUSH
    ===================================================================== */
-const ITEMS={tomato:{pts:1,good:true,c:'#e3402a'},pepper:{pts:1,good:true,c:'#ff5a1f'},onion:{pts:1,good:true,c:'#c98bc7'},rice:{pts:2,good:true,c:'#fffaf0'},cube:{pts:5,good:true,c:'#ffb21e',bonus:true},fly:{good:false,c:'#222'},stone:{good:false,c:'#8d8a86'}};
+const ITEMS={tomato:{pts:1,good:true,c:'#e3402a'},pepper:{pts:1,good:true,c:'#ff5a1f'},onion:{pts:1,good:true,c:'#c98bc7'},rice:{pts:2,good:true,c:'#fffaf0'},cube:{pts:5,good:true,c:'#ffb21e',bonus:true},heart:{pts:0,good:true,c:'#ff4d6d',life:true},fly:{good:false,c:'#222'},stone:{good:false,c:'#8d8a86'}};
 /* ===== SOUND: everything is synthesised with Web Audio, no files needed ===== */
 const Snd=(()=>{
   let ac=null,master,sfxBus,musBus,musicTimer=null,step=0,nextT=0,tempo=104;
@@ -1398,6 +1398,7 @@ const Snd=(()=>{
   const sfx={
     catch(combo,kind){const n=PENT[Math.min(PENT.length-1,combo+1)];tone({f:n,f2:n*1.5,type:'triangle',d:.12,v:.28});tone({f:n*2,type:'sine',t:.03,d:.09,v:.12});
       if(kind==='rice')noise({d:.06,v:.12,hp:5000})},
+    life(){[523.25,659.25,783.99,1046.5,1318.5].forEach((f,i)=>{tone({f,type:'sine',t:i*.07,d:.3,v:.2});tone({f:f*2,type:'triangle',t:i*.07+.02,d:.15,v:.05})})},
     bonus(){[0,1,2,3,4].forEach(i=>tone({f:PENT[i+3],type:'square',t:i*.06,d:.14,v:.1}));tone({f:1568,f2:3136,t:.3,d:.4,v:.08})},
     hit(isFly){if(isFly){tone({f:180,f2:120,type:'sawtooth',d:.35,v:.18});tone({f:186,f2:110,type:'sawtooth',d:.35,v:.12})}
       else{tone({f:140,f2:50,type:'sine',d:.25,v:.5});noise({d:.12,v:.3,hp:300})}},
@@ -1442,21 +1443,23 @@ function drawItem(ctx,t,x,y,r,rot){
   else if(t==='rice'){ctx.fillStyle='#d4c5a8';ctx.beginPath();ctx.ellipse(0,r*.15,r,r*.8,0,0,7);ctx.fill();ctx.fillStyle='#fffaf0';for(let i=0;i<9;i++){ctx.save();ctx.rotate(i*.7);ctx.beginPath();ctx.ellipse(r*.45*Math.cos(i),r*.35*Math.sin(i),r*.28,r*.11,i,0,7);ctx.fill();ctx.restore()}}
   else if(t==='cube'){ctx.fillStyle='#ffb21e';ctx.shadowColor='#ffb21e';ctx.shadowBlur=18;ctx.beginPath();ctx.roundRect(-r*.8,-r*.8,r*1.6,r*1.6,r*.3);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#b35900';ctx.font=`800 ${r*.9}px DM Sans`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('+5',0,2)}
   else if(t==='fly'){ctx.fillStyle='rgba(180,210,255,.75)';ctx.beginPath();ctx.ellipse(-r*.5,-r*.5,r*.6,r*.35,-.6+Math.sin(performance.now()/30)*.4,0,7);ctx.fill();ctx.beginPath();ctx.ellipse(r*.5,-r*.5,r*.6,r*.35,.6-Math.sin(performance.now()/30)*.4,0,7);ctx.fill();ctx.fillStyle='#222';ctx.beginPath();ctx.ellipse(0,0,r*.5,r*.7,0,0,7);ctx.fill();ctx.fillStyle='#c0392b';ctx.beginPath();ctx.arc(-r*.2,-r*.5,r*.15,0,7);ctx.arc(r*.2,-r*.5,r*.15,0,7);ctx.fill()}
+  else if(t==='heart'){const p=1+Math.sin(performance.now()/160)*.08;ctx.rotate(-rot);ctx.scale(p,p);ctx.shadowColor='#ff4d6d';ctx.shadowBlur=22;ctx.fillStyle='#ff4d6d';ctx.beginPath();ctx.moveTo(0,r*.9);ctx.bezierCurveTo(-r*1.5,-r*.1,-r*.9,-r*1.25,0,-r*.45);ctx.bezierCurveTo(r*.9,-r*1.25,r*1.5,-r*.1,0,r*.9);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='rgba(255,255,255,.55)';ctx.beginPath();ctx.ellipse(-r*.45,-r*.45,r*.22,r*.13,-.6,0,7);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=r*.12;ctx.beginPath();ctx.moveTo(0,-r*.05);ctx.lineTo(0,r*.45);ctx.moveTo(-r*.25,r*.2);ctx.lineTo(r*.25,r*.2);ctx.stroke()}
   else if(t==='stone'){ctx.fillStyle='#8d8a86';ctx.beginPath();ctx.moveTo(-r,0);ctx.lineTo(-r*.5,-r*.8);ctx.lineTo(r*.6,-r*.7);ctx.lineTo(r,r*.1);ctx.lineTo(r*.3,r*.8);ctx.lineTo(-r*.7,r*.6);ctx.fill();ctx.fillStyle='rgba(255,255,255,.25)';ctx.beginPath();ctx.ellipse(-r*.2,-r*.3,r*.3,r*.15,0,0,7);ctx.fill()}
   ctx.restore();
 }
 function initGame(){
   const cv=$('#game'),mobile=matchMedia('(max-width:700px)').matches;cv.width=mobile?600:900;cv.height=mobile?900:600;const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
   const icon=t=>{const c=document.createElement('canvas');c.width=c.height=40;drawItem(c.getContext('2d'),t,20,20,13,0);return`<img src="${c.toDataURL()}" width="22" height="22" alt="">`};
-  $('#legend').innerHTML='<span class="lg-h">Catch these</span>'+[['tomato','Tomato','+1'],['pepper','Pepper','+1'],['onion','Onion','+1'],['rice','Rice','+2'],['cube','Stock cube','+5 &amp; slow-mo']].map(([t,n,p])=>`<span class="good">${icon(t)}${n}<em>${p}</em></span>`).join('')
+  $('#legend').innerHTML='<span class="lg-h">Catch these</span>'+[['tomato','Tomato','+1'],['pepper','Pepper','+1'],['onion','Onion','+1'],['rice','Rice','+2'],['cube','Stock cube','+5 &amp; slow-mo'],['heart','Heart','+1 life']].map(([t,n,p])=>`<span class="good">${icon(t)}${n}<em>${p}</em></span>`).join('')
     +'<span class="lg-h">Avoid these</span>'+[['fly','Fly','−1 life'],['stone','Stone','−1 life']].map(([t,n,p])=>`<span class="bad">${icon(t)}${n}<em>${p}</em></span>`).join('');
   const G=window.game;Object.assign(G,{running:false,paused:false});
   let pot,items,parts,score,lives,level,combo,fill,spawnT,slowT,last,keys={},shake=0,floating=[],pop=0,best0=0,shown=0;
   function reset(){best0=store.get('best',0);pot={x:W/2,w:130,tx:W/2};items=[];parts=[];floating=[];score=0;lives=3;level=1;combo=1;fill=0;spawnT=0;slowT=0;hud()}
   function hud(){if(score===0){shown=0}$('#gScore').textContent=score;$('#gLevel').textContent=level;$('#gLives').textContent='♥'.repeat(lives)+'♡'.repeat(Math.max(0,3-lives));$('#gLives').setAttribute('aria-label',lives+' lives');$('#gCombo').textContent='×'+combo;$('#gMeter').style.width=(fill/20*100)+'%'}
   function spawn(){const r=Math.random();let t;const bad=Math.min(.12+level*.035,.38);
-    if(r<bad)t=Math.random()<.6?'fly':'stone';else if(r<bad+.05)t='cube';else t=['tomato','pepper','onion','rice'][Math.floor(Math.random()*4)];
-    items.push({t,x:40+Math.random()*(W-80),y:-30,r:t==='rice'?22:20,vy:(140+level*28)*(0.85+Math.random()*.3),vx:t==='fly'?(Math.random()-.5)*120:0,rot:Math.random()*6,vr:(Math.random()-.5)*3})}
+    if(lives<3&&!items.some(i=>i.t==='heart')&&Math.random()<(lives===1?.09:.05))t='heart';
+    else if(r<bad)t=Math.random()<.6?'fly':'stone';else if(r<bad+.05)t='cube';else t=['tomato','pepper','onion','rice'][Math.floor(Math.random()*4)];
+    items.push({t,x:40+Math.random()*(W-80),y:-30,r:t==='rice'?22:t==='heart'?24:20,vy:(140+level*28)*(t==='heart'?.75:0.85+Math.random()*.3),vx:t==='fly'?(Math.random()-.5)*120:0,rot:t==='heart'?0:Math.random()*6,vr:(Math.random()-.5)*3})}
   function burst(x,y,c,n=14){for(let i=0;i<n;i++)parts.push({x,y,vx:(Math.random()-.5)*360,vy:-Math.random()*320,life:.7,c})}
   function loop(ts){
     if(!G.running)return;if(G.paused){last=ts;requestAnimationFrame(loop);return}
@@ -1465,11 +1468,12 @@ function initGame(){
     spawnT-=dt;if(spawnT<=0){spawn();spawnT=Math.max(.32,1-level*.07)*(0.7+Math.random()*.5)}
     for(const it of items){it.y+=it.vy*dt*sm;it.x+=it.vx*dt*sm;if(it.t==='fly')it.x+=Math.sin(ts/200+it.y)*1.5;it.rot+=it.vr*dt;
       if(it.y>H-120&&it.y<H-70&&Math.abs(it.x-pot.x)<pot.w/2+it.r*.4&&!it.done){it.done=true;const I=ITEMS[it.t];
-        if(I.good){score+=I.pts*combo;pop=1;fill+=I.pts>2?3:1;combo=Math.min(5,combo+(combo<5&&Math.random()<.5?1:0));burst(it.x,H-100,I.c);floating.push({x:it.x,y:H-130,t:'+'+I.pts*combo,life:1});if(I.bonus){slowT=4;Snd.play('bonus')}else Snd.play('catch',combo,it.t);
+        if(I.life){lives=Math.min(3,lives+1);burst(it.x,H-100,'#ff4d6d',30);floating.push({x:it.x,y:H-130,t:'+1 life',life:1.3});Snd.play('life')}
+        else if(I.good){score+=I.pts*combo;pop=1;fill+=I.pts>2?3:1;combo=Math.min(5,combo+(combo<5&&Math.random()<.5?1:0));burst(it.x,H-100,I.c);floating.push({x:it.x,y:H-130,t:'+'+I.pts*combo,life:1});if(I.bonus){slowT=4;Snd.play('bonus')}else Snd.play('catch',combo,it.t);
           if(fill>=20){fill=0;level++;Snd.play('level');Snd.setTempo(level);floating.push({x:W/2,y:H/2,t:'Level '+level+'!',life:1.6,big:true});burst(pot.x,H-100,'#ffb21e',40)}}
         else{lives--;combo=1;shake=.35;Snd.play('hit',it.t==='fly');burst(it.x,H-100,'#555',18);floating.push({x:it.x,y:H-130,t:it.t==='fly'?'Yuck!':'Ouch!',life:1});if(lives<=0){hud();return over()}}
         hud()}
-      if(it.y>H+40&&!it.done){it.done=true;if(ITEMS[it.t].good){if(combo>1)Snd.play('miss');combo=1;hud()}}}
+      if(it.y>H+40&&!it.done){it.done=true;if(ITEMS[it.t].good&&!ITEMS[it.t].life){if(combo>1)Snd.play('miss');combo=1;hud()}}}
     items=items.filter(i=>!i.done&&i.y<H+40);
     parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=900*dt;p.life-=dt});parts=parts.filter(p=>p.life>0);
     floating.forEach(f=>{f.y-=60*dt;f.life-=dt});floating=floating.filter(f=>f.life>0);
@@ -1511,6 +1515,7 @@ function initGame(){
     $('#howto').hidden=true;$('#ovText').hidden=false;$('#ovName').hidden=false;$('#ovName').style.display='flex';$('#gStart').textContent='Play again';$('#gOverlay').hidden=false;G.lastScore=score;if(nb)confetti($('.game-shell'));setTimeout(()=>$('#pName').focus(),50)}
   function start(){reset();cv.scrollIntoView({block:'center',behavior:reduced?'auto':'smooth'});Snd.init();Snd.play('start');Snd.setTempo(1);if(Snd.st.music)Snd.startMusic();$('#gOverlay').hidden=true;$('#ovName').hidden=true;$('#ovName').style.display='none';G.running=true;G.paused=false;$('#gPause').textContent='Pause';last=0;cv.focus({preventScroll:true});requestAnimationFrame(loop)}
   G.start=start;
+  G.test={setLives(v){lives=v;hud()},drop(t){items.push({t,x:pot.x,y:-30,r:24,vy:220,vx:0,rot:0,vr:0})}}; // used for automated testing
   const toCanvas=cx=>{const r=cv.getBoundingClientRect();return(cx-r.left)/r.width*W};
   cv.addEventListener('pointermove',e=>{pot.tx=toCanvas(e.clientX)});
   cv.addEventListener('pointerdown',e=>{pot.tx=toCanvas(e.clientX);cv.setPointerCapture(e.pointerId)});
