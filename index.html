@@ -365,7 +365,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between}
 .socials a{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;background:var(--card)}
 
 /* ORDER MODAL */
-.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.modal{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;padding:20px}
 .modal.on{display:flex}
 .modal-scrim{position:absolute;inset:0;background:rgba(13,12,11,.45);backdrop-filter:blur(6px);animation:fadeIn .25s}
 @keyframes fadeIn{from{opacity:0}}
@@ -467,7 +467,14 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between}
   .nav-inner{height:56px;padding:0 6px 0 12px}
   .nav-right .btn[data-order]{display:none}
   .icon-btn{width:42px;height:42px}
-  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:80;padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(16px) saturate(1.4);border-top:1px solid var(--line)}
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:95;padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(0,0,0,.35);transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform;visibility:visible!important;opacity:1!important}
+  html.in-frame .tabbar{padding:6px 22px 22px}
+  html.in-frame body{padding-bottom:110px}
+  html.in-frame .chat-fab{bottom:110px}
+  html.in-frame .toast{bottom:112px}
+  html.in-frame .chat{bottom:172px;height:calc(100dvh - 300px)}
+  html.in-frame .nav{top:44px}
+  html.in-frame .m-head{padding-top:48px}
   .tabbar a,.tabbar button{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;font-size:11px;font-weight:700;color:var(--ink3);border:0;background:none;padding:6px 0;min-height:52px;-webkit-tap-highlight-color:transparent}
   .tabbar svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   .tabbar a[aria-current]{color:var(--gold)}
@@ -898,6 +905,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between}
 <div class="toast" id="toast" role="status"></div>
 
 <script>
+try{if(new URLSearchParams(location.search).has('frame'))document.documentElement.classList.add('in-frame')}catch(e){}
 /* =====================================================================
    EDIT ME: content you can change without touching the rest of the code
    ===================================================================== */
@@ -1154,7 +1162,7 @@ const count=()=>Object.values(cart).reduce((s,c)=>s+c.qty,0);
 const unit=c=>c.price??(dishById(c.dish)?.priceNum||PLATE_PRICE);
 function totals(){const sub=Object.values(cart).reduce((s,c)=>s+unit(c)*c.qty,0);const{min}=londonNow();const lunch=sub>0&&min>=720&&min<900?1:0;return{sub,lunch,total:Math.max(0,sub-lunch)}}
 function renderCart(){
-  $('#navCount').textContent=count();$('#tabCount').textContent=count();$('#bCount').textContent=count();
+  $('#navCount').textContent=count();$('#tabCount').textContent=count();$('#tabCount').hidden=!count();$('#bCount').textContent=count();
   const keys=Object.keys(cart);
   $('#mLines').innerHTML=keys.length?keys.map(k=>{const c=cart[k],d=dishById(c.dish)||DISHES[3];return`<div class="line"><div class="mini">${dishSVG(d,{steam:false})}</div><div class="nm">${esc(c.name)}<small>${esc(c.sub)} · ${gbp(unit(c)*c.qty)}</small></div><div class="qty"><button data-dec="${esc(k)}" aria-label="One less ${esc(c.name)}">−</button><span>${c.qty}</span><button data-inc="${esc(k)}" aria-label="One more ${esc(c.name)}">+</button></div></div>`}).join('')
    :`<p style="color:var(--ink2);text-align:center;padding:40px 10px">Your basket is empty.<br>Tap <b>+</b> on any dish to add it.</p>`;
