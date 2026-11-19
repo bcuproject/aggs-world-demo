@@ -490,6 +490,8 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between}
 
 .news-top>*,.builder>*,.matcher>*,.play-grid>*,.loc-grid>*,.controls>*{min-width:0}
 .chips{max-width:100%}
+body.modal-open .toast{top:auto;bottom:28px;transform:translate(-50%,160px)}
+body.modal-open .toast.on{transform:translate(-50%,0)}
 .tabbar{display:none}
 .demo-bar .short{display:none}
 @media(max-width:700px){
@@ -895,7 +897,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between}
   <div class="modal-scrim" data-close></div>
   <div class="modal-box">
     <div class="m-head">
-      <h2 id="mTitle">Order</h2>
+      <h2 id="mTitle">Order</h2><button class="icon-btn" id="uiSnd" aria-label="Ordering sounds on" aria-pressed="true" title="Ordering sounds"></button>
       <label class="sr" for="mLoc">Branch</label>
       <select id="mLoc"><option value="coventry">Coventry</option><option value="leicester">Leicester</option></select>
       <div class="m-steps"><span id="st1" class="on">1 · Choose</span><span id="st2">2 · Details</span><span id="st3">3 · Send</span></div>
@@ -1204,12 +1206,44 @@ renderPlate();
    CART + ORDER MODAL
    ===================================================================== */
 let cart=store.get('cart',{});
+const LINES={
+ jollof:['Jollof secured. Ghana could never.','Party jollof in the bag. The owambe has started.','Smoky jollof added. Excellent taste, honestly.'],
+ ebere:['Fried rice added. Your belle go sweet!','Ebere fried rice: the party classic is yours.'],
+ egusi:['Egusi added. Grandma would be proud.','Egusi in the bag. Now pick your swallow!'],
+ suya:['Suya added. Your neighbours will smell this one.','Suya secured. Pass the yaji!'],
+ asun:['Asun added. Brave choice, get water ready!','Asun in the bag. Pepper dey!'],
+ goatpepper:['Pepper soup added. It will clear your head, trust us.'],catfish:['Catfish pepper soup added. Sweat incoming!'],
+ puffpuff:['Puff-puff added. One is never enough.','Puff-puff secured. Sharing is optional.'],
+ dodo:['Dodo added. Who doesn\u2019t love dodo?','Extra dodo? Correct decision.'],
+ poundo:['Pounded yam added. Arm workout not required.'],eba:['Eba added. Soup partner sorted.'],amala:['Amala added. Ewedu dreams.'],
+ moimoi:['Moi moi added. Soft life.'],chapman:['Chapman added. Party starter!'],zobo:['Zobo added. Chilled and fabulous.'],malt:['Malt added. Jollof\u2019s best friend.'],
+ nkwobi:['Nkwobi added. Chairman-level choice.'],isiewu:['Isi ewu added. Chief, welcome!'],
+};
+const GENERIC=['Oya! Added to your basket.','Correct choice!','Your belle go thank you.','Added. Chef is already smiling.','Sharp! It\u2019s in the basket.','No shaking, it\u2019s in the bag.'];
+const MILESTONES={3:'Ehen! Now we\u2019re talking.',5:'Owambe-level order!',8:'Are you feeding the whole street?',12:'Chairman! Should we close the kitchen for you?'};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function basketTarget(){
+  if($('#orderModal').classList.contains('on')){const t=matchMedia('(max-width:820px)').matches?$('#basketToggle'):$('#mBasket h3');if(t)return t}
+  const tab=$('.tabbar .tob');if(tab&&tab.getBoundingClientRect().height&&getComputedStyle($('.tabbar')).display!=='none')return tab;
+  return $('.nav-right [data-order]');
+}
+function flyToBasket(el,dishId){
+  const tgt=basketTarget();if(!el||!tgt||reduced)return tgt;
+  const a=el.getBoundingClientRect(),b=tgt.getBoundingClientRect(),d=dishById(dishId)||DISHES[3];
+  const f=document.createElement('div');f.style.cssText=`position:fixed;left:${a.left+a.width/2-28}px;top:${a.top+a.height/2-28}px;width:56px;height:56px;z-index:300;pointer-events:none`;f.innerHTML=dishSVG(d,{steam:false});document.body.appendChild(f);
+  const dx=b.left+b.width/2-(a.left+a.width/2),dy=b.top+b.height/2-(a.top+a.height/2);
+  f.animate([{transform:'translate(0,0) scale(1) rotate(0)',opacity:1},{transform:`translate(${dx*.5}px,${dy*.5-120}px) scale(1.15) rotate(200deg)`,opacity:1,offset:.5},{transform:`translate(${dx}px,${dy}px) scale(.25) rotate(400deg)`,opacity:.6}],{duration:750,easing:'cubic-bezier(.45,.05,.55,.95)'}).onfinish=()=>{f.remove();tgt.animate([{transform:'rotate(0) scale(1)'},{transform:'rotate(-14deg) scale(1.2)'},{transform:'rotate(12deg) scale(1.15)'},{transform:'rotate(-6deg) scale(1.05)'},{transform:'rotate(0) scale(1)'}],{duration:500})};
+  return tgt;
+}
 function addToCart(id,el,custom){try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}
   const d=id&&dishById(id),key=custom?custom.key:id;
   if(!cart[key])cart[key]={qty:0,name:custom?custom.name:d.name,sub:custom?custom.sub:d.cat,dish:custom?custom.dish:id,custom:!!custom,price:custom?PLATE_PRICE:d.priceNum};
   cart[key].qty++;store.set('cart',cart);renderCart();
   if(el&&el.classList.contains('add')){el.classList.add('added');el.querySelector('span').textContent='Added';setTimeout(()=>{el.classList.remove('added');el.querySelector('span').textContent='Add'},1100)}
-  toast(`${cart[key].name} added · ${count()} in basket`);
+  const n=count(),ms=MILESTONES[n];
+  Snd.ui('add',n);if(ms)Snd.ui('milestone');
+  flyToBasket(el,custom?custom.dish:id);
+  toast(ms?`${ms} (${n} items)`:`${custom?'Custom plate':cart[key].name}: ${pick(LINES[custom?'':id]||GENERIC)}`);
   $('#navCount').animate([{transform:'scale(1)'},{transform:'scale(1.5)'},{transform:'scale(1)'}],{duration:400});
 }
 const count=()=>Object.values(cart).reduce((s,c)=>s+c.qty,0);
@@ -1224,7 +1258,7 @@ function renderCart(){
   const T=totals();$('#mTotals').innerHTML=keys.length?`<div class="tot"><span>Subtotal</span><span>${gbp(T.sub)}</span></div>${T.lunch?`<div class="tot" style="color:var(--green)"><span>Lunch deal (12–3pm)</span><span>−${gbp(T.lunch)}</span></div>`:''}<div class="tot big"><span>Total</span><span>${gbp(T.total)}</span></div>`:'';
   $('#toDetails').textContent=keys.length?`Continue · ${gbp(T.total)}`:'Continue';
 }
-$('#mLines').onclick=e=>{const i=e.target.closest('[data-inc]'),d=e.target.closest('[data-dec]');if(i)cart[i.dataset.inc].qty++;if(d){const k=d.dataset.dec;if(--cart[k].qty<=0)delete cart[k]}if(i||d){store.set('cart',cart);renderCart()}};
+$('#mLines').onclick=e=>{const i=e.target.closest('[data-inc]'),d=e.target.closest('[data-dec]');if(i){cart[i.dataset.inc].qty++;Snd.ui('add',count())}if(d){const k=d.dataset.dec,nm=cart[k].name;if(--cart[k].qty<=0){delete cart[k];Snd.ui('remove');toast(`${nm} removed. Ah, you no like am again?`)}else Snd.ui('remove')}if(i||d){store.set('cart',cart);renderCart()}};
 const mState={cat:'All',q:''};
 $('#mChips').innerHTML=CATS.map(c=>`<button class="chip" data-c="${c}" aria-pressed="${c==='All'}">${c}</button>`).join('');
 $('#mChips').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;mState.cat=b.dataset.c;$$('#mChips .chip').forEach(x=>x.setAttribute('aria-pressed',x===b));renderMList()};
@@ -1234,10 +1268,10 @@ function renderMList(){
     html+=`<h4 class="m-cat">${c}</h4>`+items.map(d=>`<div class="row"><div class="mini">${dishSVG(d,{steam:false})}</div><div class="nm"><b>${d.name}${d.price?` · ${d.price}`:''}</b><small>${d.desc}</small></div><div class="chili" aria-label="Heat ${d.heat} of 3">${[1,2,3].map(i=>CHILI(i<=d.heat)).join('')}</div><button class="plus" data-madd="${d.id}" aria-label="Add ${esc(d.name)}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>`).join('')});
   $('#mList').innerHTML=html||'<p class="empty">Nothing matches that search.</p>';
 }
-$('#mList').onclick=e=>{const b=e.target.closest('[data-madd]');if(b){addToCart(b.dataset.madd);b.animate([{transform:'scale(1)'},{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:300})}};
+$('#mList').onclick=e=>{const b=e.target.closest('[data-madd]');if(b){addToCart(b.dataset.madd,b);b.animate([{transform:'scale(1)'},{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:300})}};
 let lastFocus;
-function openOrder(){lastFocus=document.activeElement;$('#orderModal').classList.add('on');document.body.style.overflow='hidden';goStep(1);renderMList();renderReorder();setTimeout(()=>$('#mQ').focus(),50)}
-function closeOrder(){$('#orderModal').classList.remove('on');document.body.style.overflow='';lastFocus&&lastFocus.focus()}
+function openOrder(){lastFocus=document.activeElement;document.body.classList.add('modal-open');$('#orderModal').classList.add('on');document.body.style.overflow='hidden';goStep(1);renderMList();renderReorder();setTimeout(()=>$('#mQ').focus(),50)}
+function closeOrder(){document.body.classList.remove('modal-open');$('#orderModal').classList.remove('on');document.body.style.overflow='';lastFocus&&lastFocus.focus()}
 document.addEventListener('click',e=>{if(e.target.closest('[data-order]'))openOrder();if(e.target.closest('#orderModal [data-close]'))closeOrder()});
 $('#orderModal').addEventListener('keydown',e=>{if(e.key==='Escape')closeOrder()});
 $('#basketToggle').onclick=()=>$('#mBasket').classList.toggle('open');
@@ -1414,7 +1448,7 @@ const ITEMS={tomato:{pts:1,good:true,c:'#e3402a'},pepper:{pts:1,good:true,c:'#ff
 /* ===== SOUND: everything is synthesised with Web Audio, no files needed ===== */
 const Snd=(()=>{
   let ac=null,master,sfxBus,musBus,musicTimer=null,step=0,nextT=0,tempo=104;
-  const st={sfx:store.get('sfx',true),music:store.get('music',true)};
+  const st={sfx:store.get('sfx',true),music:store.get('music',true),ui:store.get('uiSfx',true)};
   function init(){if(ac){if(ac.state==='suspended')ac.resume();return true}
     try{ac=new(window.AudioContext||window.webkitAudioContext)()}catch(e){return false}
     master=ac.createGain();master.gain.value=.8;master.connect(ac.destination);
@@ -1463,6 +1497,17 @@ const Snd=(()=>{
   function tone2(T,o){tone({...o,bus:musBus,t:T-ac.currentTime})}
   return{
     st,init,play(n,...a){if(!st.sfx||!init())return;sfx[n]&&sfx[n](...a)},
+    ui(n,k=1){if(!st.ui||!init())return;
+      if(n==='add'){ // talking drum "doom-doom": pitch climbs as the basket grows
+        const f=150*Math.pow(1.06,Math.min(k,12));
+        tone({f:f*1.35,f2:f*.78,type:'sine',d:.26,v:.6});tone({f:f*2.7,f2:f*1.6,type:'triangle',d:.08,v:.08});
+        tone({f:f*.95,f2:f*1.45,type:'sine',t:.15,d:.24,v:.5});
+        noise({d:.04,v:.08,hp:6500});noise({t:.15,d:.04,v:.06,hp:6500});
+        tone({f:1320,type:'triangle',t:.3,d:.08,v:.05})}
+      if(n==='milestone'){[523.25,659.25,783.99,1046.5].forEach((f,i)=>tone({f,type:'triangle',t:.35+i*.07,d:.2,v:.12}))}
+      if(n==='remove'){[392,370,349,311].forEach((f,i)=>tone({f,f2:i===3?(f*.94):null,type:'sawtooth',t:i*.24,d:i===3?.7:.22,v:.07}));[392,370,349,311].forEach((f,i)=>tone({f:f/2,type:'triangle',t:i*.24,d:i===3?.7:.22,v:.1}))}
+    },
+    toggleUi(){st.ui=!st.ui;store.set('uiSfx',st.ui);return st.ui},
     startMusic(){if(!init())return;this.stopMusic();step=0;nextT=ac.currentTime+.05;musicTimer=setInterval(sched,40)},
     stopMusic(){clearInterval(musicTimer);musicTimer=null},
     setTempo(l){tempo=Math.min(150,100+l*5)},
@@ -1474,6 +1519,9 @@ function syncSndBtns(){[['gSfx','sfx','SFX','Sound effects'],['gMusic','music','
 $('#gSfx').onclick=()=>{Snd.toggle('sfx');syncSndBtns();Snd.play('click')};
 $('#gMusic').onclick=()=>{Snd.toggle('music');syncSndBtns();if(Snd.st.music&&window.game.running&&!window.game.paused)Snd.startMusic()};
 syncSndBtns();
+const SPK_ON='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>',SPK_OFF='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
+function syncUiSnd(){const b=$('#uiSnd');b.innerHTML=Snd.st.ui?SPK_ON:SPK_OFF;b.setAttribute('aria-pressed',Snd.st.ui);b.setAttribute('aria-label','Ordering sounds '+(Snd.st.ui?'on':'off'))}
+$('#uiSnd').onclick=()=>{Snd.toggleUi();syncUiSnd();toast(Snd.st.ui?'Ordering sounds on':'Ordering sounds off');if(Snd.st.ui)Snd.ui('add',1)};syncUiSnd();
 window.game={running:false};
 function drawItem(ctx,t,x,y,r,rot){
   ctx.save();ctx.translate(x,y);ctx.rotate(rot);
