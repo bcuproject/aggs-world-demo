@@ -503,6 +503,12 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
 #menuGrid,#newsGrid{contain:layout style}
 .tabbar .tob{transition:transform .12s}
 .tabbar button:active .tob{transform:scale(.9)}
+.game-title{display:none}
+@media(max-width:700px){
+  body.playing .game-title{display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 0 10px;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:26px;letter-spacing:-.02em;color:var(--ink)}
+  body.playing .game-title .serif{color:var(--gold);font-size:1.1em}
+  .gt-badge{width:32px;height:32px;border-radius:50%;background:var(--gold);color:#14110f;display:grid;place-items:center;font-size:11px;font-family:"Bricolage Grotesque",sans-serif}
+}
 .howto-toggle{display:none}
 .ov-best{margin:0;font-weight:700;color:var(--gold);font-size:14px}
 .ov-best:empty{display:none}
@@ -823,6 +829,7 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
       <div class="play-grid">
         <div>
           <div class="card game-shell">
+            <div class="game-title" aria-hidden="true"><span class="gt-badge">AGG</span><span>Jollof <span class="serif">Rush</span></span></div>
             <div class="game-hud">
               <span class="hud">Score <b id="gScore">0</b></span>
               <span class="hud">Level <b id="gLevel">1</b></span>
@@ -1656,7 +1663,7 @@ function drawItem(ctx,t,x,y,r,rot){
 function initGame(){
   const cv=$('#game'),mobile=matchMedia('(max-width:700px)').matches;cv.width=mobile?600:900;cv.height=mobile?900:600;const ctx=cv.getContext('2d');let W=cv.width,H=cv.height;
   // On phones the play area is shaped to fill the screen exactly (no empty bands)
-  function fitCanvas(){if(!matchMedia('(max-width:700px)').matches)return;const sh=$('.game-shell'),cs=getComputedStyle(sh),hud=$('.game-hud').offsetHeight;
+  function fitCanvas(){if(!matchMedia('(max-width:700px)').matches)return;const sh=$('.game-shell'),cs=getComputedStyle(sh),hud=$('.game-hud').offsetHeight+($('.game-title').offsetHeight||0);
     const aw=sh.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),ah=sh.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom)-hud-4;
     if(aw<100||ah<100)return;const nh=Math.round(Math.min(1500,Math.max(760,600*ah/aw)));if(cv.width!==600||cv.height!==nh){cv.width=600;cv.height=nh;W=600;H=nh;if(pot)pot.x=Math.min(pot.x,W-pot.w/2)}}
   addEventListener('resize',()=>{if(G.running)fitCanvas()});

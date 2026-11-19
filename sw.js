@@ -1,7 +1,7 @@
 // A.G.G's demo: makes repeat visits load instantly and keeps the site usable on a weak signal.
 // Pages: network first (always the latest version), cached copy if offline.
 // Fonts, icons and other files: served from cache straight away, refreshed in the background.
-const CACHE = 'aggs-v2';
+const CACHE = 'aggs-v3';
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', 'index.html', 'manifest.webmanifest', 'icon-192.png'])).then(() => self.skipWaiting()));
 });
