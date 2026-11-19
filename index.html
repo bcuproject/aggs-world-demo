@@ -516,10 +516,10 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
 @keyframes dsIn{from{transform:scale(.4) rotate(-120deg);opacity:0}}
 .ds-fav{position:absolute;top:16px;left:16px;background:var(--red);color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px}
 .ds-body{padding:34px 30px 26px;display:flex;flex-direction:column;gap:10px}
-.ds-meta{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink3);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.ds-meta{display:flex;align-items:center;gap:10px;padding-right:46px;font-size:13px;color:var(--ink3);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
 .ds-meta .chili svg{width:16px;height:16px}
 .ds-heat-l{text-transform:none;letter-spacing:0;font-weight:600}
-#dsName{font-size:clamp(28px,3.4vw,38px);padding-right:40px}
+#dsName{font-size:clamp(28px,3.4vw,38px)}
 .ds-price{font-size:22px;font-weight:800;color:var(--gold)}
 .ds-desc{color:var(--ink2);margin:0;font-size:16px}
 .ds-pair h4{font-size:13px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin:6px 0 8px}
@@ -549,6 +549,38 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
   .ds-body{padding:16px 18px 18px}
   .ds-buy{position:sticky;bottom:0;background:var(--card);padding:12px 0 4px}
 }
+.fav-wrap{max-width:860px}
+@media(max-width:700px){body[data-route="favourites"] .chat-fab{display:none}.recent{padding:12px 14px;gap:10px}.recent .info small{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.recent .btn{width:100%}}
+.fav-sec{margin-bottom:30px}
+.fav-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.fav-h h2{font-size:24px}
+.fav-list{display:grid;gap:10px}
+.fav-row{display:flex;align-items:center;gap:14px;padding:10px 12px;border-radius:20px;background:var(--card);border:1px solid var(--line);cursor:pointer;transition:transform .15s,border-color .2s}
+.fav-row:hover{border-color:var(--line2)}
+.fav-row:active{transform:scale(.99)}
+.fav-row .mini{width:62px;height:62px;flex:none}
+.fav-row .nm{flex:1;min-width:0}
+.fav-row .nm b{display:block;font-size:16px}
+.fav-row .nm small{color:var(--ink3);font-weight:600}
+.fav-row .times{display:inline-block;background:rgba(242,179,61,.15);color:var(--gold);border-radius:999px;padding:1px 8px;font-size:12px;font-weight:800;margin-left:6px}
+.fav-row .price{font-weight:800;margin-right:4px}
+.heart-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--bg);display:grid;place-items:center;flex:none;color:var(--ink3)}
+.heart-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2}
+.heart-btn[aria-pressed="true"]{color:#ff4d6d;border-color:rgba(255,77,109,.4)}
+.heart-btn[aria-pressed="true"] svg{fill:#ff4d6d}
+.heart-btn.pop{animation:hpop .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes hpop{40%{transform:scale(1.35)}}
+.dish .heart-btn{position:absolute;top:10px;right:10px;z-index:2;background:color-mix(in srgb,var(--card) 80%,transparent)}
+.recent{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px 18px;margin-bottom:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.recent .minis{display:flex}
+.recent .minis .mini{width:40px;height:40px;margin-right:-10px;border-radius:50%;background:var(--card)}
+.recent .info{flex:1;min-width:180px}
+.recent .info b{display:block}
+.recent .info small{color:var(--ink3)}
+.ds-meta .heart-btn{margin-left:auto;width:38px;height:38px}
+.tabbar a svg path{fill:none}
+.tabbar a[aria-current] svg path{fill:currentColor;fill-opacity:.25}
+@media(max-width:700px){.fav-row .mini{width:52px;height:52px}.fav-row{gap:10px}.fav-h h2{font-size:21px}.dish .heart-btn{width:34px;height:34px;top:6px;right:6px}.dish .heart-btn svg{width:17px;height:17px}}
 .game-title{display:none}
 @media(max-width:700px){
   body.playing .game-title{display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 0 10px;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:26px;letter-spacing:-.02em;color:var(--ink)}
@@ -713,7 +745,7 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
   <div class="nav-inner">
     <a class="logo" href="#/"><span class="logo-mark">AGG</span>A.G.G's</a>
     <nav class="nav-links" id="navLinks" aria-label="Main">
-      <a href="#/">Home</a><a href="#/menu">Menu</a><a href="#/news">Naija News</a><a href="#/play">Play</a><a href="#/videos">Our Story</a><a href="#/visit">Visit</a>
+      <a href="#/">Home</a><a href="#/menu">Menu</a><a href="#/favourites">Favourites</a><a href="#/news">Naija News</a><a href="#/play">Play</a><a href="#/videos">Our Story</a><a href="#/visit">Visit</a>
     </nav>
     <div class="nav-right">
       <button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
@@ -823,6 +855,25 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
         <div class="card builder-plate reveal"><div id="builderArt"></div><div class="sum" id="builderSum">Start by picking a base.</div><button class="btn btn-grad" id="builderAdd" style="width:100%" disabled>Add my plate to order</button></div>
         <div id="builderSteps"></div>
       </div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= FAVOURITES ================= -->
+<div class="page" data-page="favourites">
+  <div class="mesh" aria-hidden="true" style="height:380px"><div class="blob b2"></div><div class="blob b1" style="left:55%"></div></div>
+  <div class="page-hero wrap" style="position:relative;z-index:1">
+    <span class="eyebrow"><i></i>Quick order</span>
+    <h1 class="h-lg">Your <span class="serif grad-text">favourites</span></h1>
+    <p class="lede">The dishes you love and order most, one tap away.</p>
+  </div>
+  <section style="padding-top:24px">
+    <div class="wrap fav-wrap">
+      <div class="fav-sec" id="favUsualsSec"><div class="fav-h"><h2>Your usuals</h2><span class="note">Ordered before, most often first</span></div><div class="fav-list" id="favUsuals"></div></div>
+      <div class="fav-sec" id="favSavedSec"><div class="fav-h"><h2>Saved</h2><span class="note">Tap the ♥ on any dish to save it here</span></div><div class="fav-list" id="favSaved"></div></div>
+      <div class="fav-sec" id="favRecentSec"><div class="fav-h"><h2>Order again</h2><span class="note">Your recent orders</span></div><div id="favRecent"></div></div>
+      <div class="fav-sec" id="favPopSec"><div class="fav-h"><h2 id="favPopTitle">Popular at A.G.G's</h2><span class="note" id="favPopNote">Start here, then your usuals will appear</span></div><div class="fav-list" id="favPop"></div></div>
+      <div style="text-align:center;margin-top:10px"><a class="btn btn-ghost" href="#/menu">Browse the full menu</a></div>
     </div>
   </section>
 </div>
@@ -983,7 +1034,7 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
 
 <nav class="tabbar" aria-label="Quick navigation">
   <a href="#/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>Home</a>
-  <a href="#/menu"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M5 13h14M8 4v3M12 3v4M16 4v3"/></svg>Menu</a>
+  <a href="#/favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.2 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.4 3.7 3.8 6.9C19 15.6 12 20 12 20z"/></svg>Favourites</a>
   <button class="tab-order" data-order aria-label="Open order"><span class="tob"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l-1.5 11a2 2 0 0 1-2 1.7h-7a2 2 0 0 1-2-1.7z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg><b id="tabCount">0</b></span>Order</button>
   <a href="#/news"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>News</a>
   <a href="#/play"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="11" rx="5"/><path d="M8 11v3M6.5 12.5h3"/><circle cx="16" cy="11.5" r="1"/><circle cx="17.5" cy="14" r="1"/></svg>Play</a>
@@ -1063,7 +1114,7 @@ button,a,.opt,.chip,[role="button"]{touch-action:manipulation;-webkit-tap-highli
     <button class="icon-btn sheet-x" data-sclose aria-label="Close dish"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <div class="ds-art"><div class="ds-glow"></div><div id="dsArt"></div><span class="ds-fav" id="dsFav" hidden>House favourite</span></div>
     <div class="ds-body">
-      <div class="ds-meta"><span class="ds-cat" id="dsCat"></span><span class="chili" id="dsHeat"></span><span class="ds-heat-l" id="dsHeatL"></span></div>
+      <div class="ds-meta"><span class="ds-cat" id="dsCat"></span><span class="chili" id="dsHeat"></span><span class="ds-heat-l" id="dsHeatL"></span><button class="heart-btn" id="dsHeart" aria-pressed="false" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.2 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.4 3.7 3.8 6.9C19 15.6 12 20 12 20z"/></svg></button></div>
       <h2 id="dsName"></h2>
       <div class="ds-price" id="dsPrice"></div>
       <p class="ds-desc" id="dsDesc"></p>
@@ -1238,6 +1289,7 @@ function route(forced){
   if(p==='news'&&!inited.news){inited.news=1;loadNews();loadFx();}
   if(p==='play'&&!inited.play){inited.play=1;initGame();initTrivia();}
   if(p==='menu')initMenuPage();
+  if(p==='favourites')renderFavs();
   if(p==='videos'){initVideosPage();initStory();}else{stopStory();}
   if(p!=='play'&&window.game&&game.running){pauseGame(true);game.setPlaying&&game.setPlaying(false);$('#gExit').hidden=false}
   if(p==='play'&&window.game&&game.running&&game.paused&&!game.quiz&&$('#gOverlay').hidden)setTimeout(()=>game.showPause('Paused','Welcome back! Your game is waiting.'),50);
@@ -1307,7 +1359,7 @@ const debounce=(f,ms=120)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()
 $('#menuQ').oninput=debounce(e=>{ms.q=e.target.value.toLowerCase().trim();renderMenu()});
 let menuBuilt=false;
 function buildMenu(){
-  $('#menuGrid').innerHTML=DISHES.map(d=>`<article class="card dish" data-id="${d.id}">${d.star?'<span class="tag">House favourite</span>':''}<div class="art">${dishSVG(d)}</div><h3><button class="dish-open" data-open="${d.id}">${d.name}</button></h3><p>${d.desc}</p>
+  $('#menuGrid').innerHTML=DISHES.map(d=>`<article class="card dish" data-id="${d.id}"><button class="heart-btn" data-fav="${d.id}" aria-pressed="${isFav(d.id)}" aria-label="Save ${esc(d.name)} to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.2 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.4 3.7 3.8 6.9C19 15.6 12 20 12 20z"/></svg></button>${d.star?'<span class="tag">House favourite</span>':''}<div class="art">${dishSVG(d)}</div><h3><button class="dish-open" data-open="${d.id}">${d.name}</button></h3><p>${d.desc}</p>
    <div class="dish-foot"><div class="chili" aria-label="Heat ${d.heat} of 3">${[1,2,3].map(i=>CHILI(i<=d.heat)).join('')}</div>${d.price?`<span class="price">${d.price}</span>`:''}<button class="add" data-add="${d.id}" aria-label="Add ${esc(d.name)} to order"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Add</span></button></div></article>`).join('')+`<div class="empty" id="menuEmpty" hidden>No dishes match. Try turning up the heat dial or clearing the search.</div>`;
   if(!reduced&&matchMedia('(hover:hover)').matches)$$('#menuGrid .dish').forEach(c=>{c.onmousemove=e=>{const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;c.style.transform=`perspective(900px) rotateY(${x*8}deg) rotateX(${-y*8}deg) translateY(-4px)`};c.onmouseleave=()=>c.style.transform=''});
   menuBuilt=true;watchAnim($('#menuGrid'));
@@ -1317,7 +1369,7 @@ function renderMenu(){
   $$('#menuGrid .dish').forEach(el=>{const d=dishById(el.dataset.id);const ok=(ms.cat==='All'||d.cat===ms.cat)&&d.heat<=ms.heat&&(!ms.q||(d.name+d.desc+d.cat).toLowerCase().includes(ms.q));if(el.hidden===ok){el.hidden=!ok;if(ok&&!reduced)el.animate([{opacity:0,transform:'scale(.96)'},{opacity:1,transform:'none'}],{duration:220,easing:'ease-out'})}if(ok)shown++});
   $('#menuEmpty').hidden=shown>0;
 }
-$('#menuGrid').onclick=e=>{const b=e.target.closest('[data-add]');if(b)return addToCart(b.dataset.add,b);const c=e.target.closest('.dish');if(c)openDish(c.dataset.id)};
+$('#menuGrid').onclick=e=>{const h=e.target.closest('[data-fav]');if(h)return toggleFav(h.dataset.fav,h);const b=e.target.closest('[data-add]');if(b)return addToCart(b.dataset.add,b);const c=e.target.closest('.dish');if(c)openDish(c.dataset.id)};
 let menuInit=false;function initMenuPage(){if(menuInit)return;menuInit=true;renderMenu();renderPlate()}
 // builder
 const STEPS=[
@@ -1425,6 +1477,39 @@ function renderMList(){
   $('#mEmpty').hidden=any>0;
 }
 $('#mList').onclick=e=>{const b=e.target.closest('[data-madd]');if(!b){const r=e.target.closest('.row');if(r)openDish(r.dataset.id);return}if(b){addToCart(b.dataset.madd,b);b.animate([{transform:'scale(1)'},{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:300})}};
+/* ===== Favourites: saved hearts + order history (kept on this device) ===== */
+let favs=new Set(store.get('favs',[]));
+const isFav=id=>favs.has(id);
+function toggleFav(id,btn){if(favs.has(id))favs.delete(id);else favs.add(id);store.set('favs',[...favs]);const on=favs.has(id);
+  $$(`[data-fav="${id}"]`).forEach(b=>b.setAttribute('aria-pressed',on));if(dsId===id)$('#dsHeart').setAttribute('aria-pressed',on);
+  if(btn){btn.classList.remove('pop');void btn.offsetWidth;btn.classList.add('pop')}
+  if(on)Snd.ui('milestone');toast(on?`${dishById(id).name} saved to favourites`:`${dishById(id).name} removed from favourites`);
+  if(curRoute==='favourites')renderFavs()}
+function recordOrder(){const items=Object.values(cart).filter(c=>c.qty>0);if(!items.length)return;
+  const h=store.get('history',{}),orders=store.get('orders',[]);
+  items.forEach(c=>{if(c.custom)return;const e=h[c.dish]||{n:0,last:0};e.n+=c.qty;e.last=Date.now();h[c.dish]=e});
+  orders.unshift({t:Date.now(),items:items.map(c=>({k:c.custom?c.name+'|'+c.sub:c.dish,name:c.name,sub:c.sub,dish:c.dish,qty:c.qty,price:unit(c),custom:!!c.custom}))});
+  store.set('history',h);store.set('orders',orders.slice(0,10))}
+function favRow(d,extra=''){return`<div class="fav-row" data-open="${d.id}"><div class="mini">${dishSVG(d,{steam:false})}</div><div class="nm"><b>${d.name}${extra}</b><small>${d.cat}</small></div><span class="price">${d.price}</span><button class="heart-btn" data-fav="${d.id}" aria-pressed="${isFav(d.id)}" aria-label="Save ${esc(d.name)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.2 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.4 3.7 3.8 6.9C19 15.6 12 20 12 20z"/></svg></button><button class="plus" data-fadd="${d.id}" aria-label="Add ${esc(d.name)}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>`}
+const agoTxt=t=>{const d=Math.round((Date.now()-t)/864e5);return d<1?'Today':d===1?'Yesterday':d+' days ago'};
+function renderFavs(){
+  const h=store.get('history',{}),orders=store.get('orders',[]);
+  const usual=Object.entries(h).filter(([id])=>dishById(id)).sort((a,b)=>b[1].n-a[1].n||b[1].last-a[1].last).slice(0,8);
+  $('#favUsuals').innerHTML=usual.map(([id,e])=>favRow(dishById(id),`<span class="times">${e.n}×</span>`)).join('');$('#favUsualsSec').hidden=!usual.length;
+  const saved=[...favs].map(dishById).filter(Boolean);
+  $('#favSaved').innerHTML=saved.map(d=>favRow(d)).join('');$('#favSavedSec').hidden=!saved.length;
+  $('#favRecentSec').hidden=!orders.length;$('#favRecent').innerHTML=orders.slice(0,2).map((o,i)=>{const tot=o.items.reduce((s,x)=>s+x.price*x.qty,0),n=o.items.reduce((s,x)=>s+x.qty,0);
+    return`<div class="recent"><div class="minis">${o.items.slice(0,4).map(x=>`<span class="mini">${dishSVG(dishById(x.dish)||DISHES[3],{steam:false})}</span>`).join('')}</div><div class="info"><b>${i===0?'Your last order':'Earlier order'} · ${agoTxt(o.t)}</b><small>${o.items.map(x=>x.qty+'× '+esc(x.name)).join(', ')} · ${n} item${n>1?'s':''} · ${gbp(tot)}</small></div><button class="btn btn-grad btn-sm" data-reorder="${i}">Reorder</button></div>`}).join('');
+  const fresh=!usual.length;const pop=DISHES.filter(d=>d.star||['suya','dodo','chapman','puffpuff'].includes(d.id)).filter(d=>fresh||!h[d.id]).slice(0,6);
+  $('#favPopTitle').textContent=fresh?'Popular at A.G.G\u2019s':'You might also like';$('#favPopNote').textContent=fresh?'Tap + to add, ♥ to save. Your usuals will appear here after you order.':'Dishes you haven\u2019t tried yet';
+  $('#favPop').innerHTML=pop.map(d=>favRow(d)).join('');$('#favPopSec').hidden=!pop.length;
+}
+document.querySelector('[data-page="favourites"]').addEventListener('click',e=>{
+  const hb=e.target.closest('[data-fav]');if(hb)return toggleFav(hb.dataset.fav,hb);
+  const a=e.target.closest('[data-fadd]');if(a){addToCart(a.dataset.fadd,a);a.animate([{transform:'scale(1)'},{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:280});return}
+  const r=e.target.closest('[data-reorder]');if(r){const o=store.get('orders',[])[+r.dataset.reorder];if(!o)return;o.items.forEach(x=>{const k=x.custom?'custom:'+x.sub.split(' + ').join('|'):x.dish;if(!cart[k])cart[k]={qty:0,name:x.name,sub:x.sub,dish:x.dish,custom:x.custom,price:x.price};cart[k].qty+=x.qty});store.set('cart',cart);renderCart();Snd.ui('add',count());Snd.ui('milestone');toast('Your order is back in the basket. Same again, chef!');openOrder();return}
+  const row=e.target.closest('[data-open]');if(row)openDish(row.dataset.open)});
+
 /* ===== Big dish view ===== */
 const PAIRS={'Soup Dishes':['poundo','eba','amala'],'Rice Menu':['dodo','chapman','moimoi'],'Stew Dishes':['whiterice','dodo','zobo'],'Starter':['chapman','zobo','jollof'],'Special Dishes':['malt','chapman','dodo'],'Beans Menu':['dodo','zobo','puffpuff'],'Yam Dishes':['dodo','chapman','egusi'],'Extras':['egusi','efo','ogbono'],'Drinks':['jollof','suya','puffpuff']};
 const HEATL=['No heat','Mild','Medium','Hot!'];
@@ -1433,6 +1518,7 @@ function openDish(id){
   const d=dishById(id);if(!d)return;dsId=id;dsQ=1;const first=$('#dishSheet').hidden;if(first)dsFocus=document.activeElement;
   $('#dsArt').innerHTML=dishSVG(d);$('#dsArt').style.animation='none';void $('#dsArt').offsetWidth;$('#dsArt').style.animation='';
   $('#dsFav').hidden=!d.star;$('#dsCat').textContent=d.cat;$('#dsHeat').innerHTML=[1,2,3].map(i=>CHILI(i<=d.heat)).join('');$('#dsHeatL').textContent=HEATL[d.heat];
+  $('#dsHeart').setAttribute('aria-pressed',isFav(id));$('#dsHeart').setAttribute('aria-label',(isFav(id)?'Remove ':'Save ')+d.name+(isFav(id)?' from':' to')+' favourites');
   $('#dsName').textContent=d.name;$('#dsPrice').textContent=d.price||'';$('#dsDesc').textContent=d.desc;
   $('#dsPair').innerHTML=(PAIRS[d.cat]||[]).filter(x=>x!==id).map(dishById).filter(Boolean).map(p=>`<button data-pair="${p.id}"><span class="mini">${dishSVG(p,{steam:false})}</span>${p.name}<small>${p.price}</small></button>`).join('');
   dsSync();const sh=$('#dishSheet');sh.hidden=false;$('#sheetBox').style.transform='';$('#sheetBox').scrollTop=0;
@@ -1444,6 +1530,7 @@ function dsSync(){const d=dishById(dsId);$('#dsQty').textContent=dsQ;$('#dsAdd')
 function closeDish(){const sh=$('#dishSheet');if(sh.hidden)return;
   const box=$('#sheetBox'),done=()=>{sh.hidden=true;box.style.transform='';box.style.transition='';if(!$('#orderModal').classList.contains('on'))document.documentElement.style.overflow='';dsFocus&&dsFocus.focus&&dsFocus.focus({preventScroll:true})};
   if(reduced)return done();box.style.transition='transform .25s ease-in,opacity .25s';box.style.transform=matchMedia('(max-width:700px)').matches?'translateY(100%)':'scale(.94)';box.style.opacity='0';setTimeout(()=>{box.style.opacity='';done()},230)}
+$('#dsHeart').onclick=e=>toggleFav(dsId,e.currentTarget);
 $('#dsPlus').onclick=()=>{dsQ=Math.min(20,dsQ+1);dsSync();$('#dsQty').animate([{transform:'scale(1)'},{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:220})};
 $('#dsMinus').onclick=()=>{dsQ=Math.max(1,dsQ-1);dsSync();$('#dsQty').animate([{transform:'scale(1)'},{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:220})};
 $('#dsAdd').onclick=e=>{const id=dsId,n=dsQ;addToCart(id,e.currentTarget);if(n>1){cart[id].qty+=n-1;store.set('cart',cart);renderCart();toast(`${n} × ${dishById(id).name} added. ${pick(LINES[id]||GENERIC)}`)}setTimeout(closeDish,260)};
@@ -1487,11 +1574,11 @@ $('#toSend').onclick=()=>{
   else{b.href=`tel:${L.phone}`;b.textContent=`Call ${L.name}`}
   goStep(3);
 };
-$('#sendBtn').onclick=()=>{store.set('last',cart);setTimeout(()=>{toast('Order sent. Thank you!');},400)};
+$('#sendBtn').onclick=()=>{store.set('last',cart);recordOrder();setTimeout(()=>{toast('Order sent. Thank you!');},400)};
 // DEMO: simulated order placement + live tracker
 const STAGES=[['Order received','The kitchen has your order'],['Preparing','Fresh ingredients on the board'],['Cooking','On the fire now'],['Ready for pick-up','Come and get it while it\u2019s hot!']];
 let trackTimer;
-$('#placeDemo').onclick=()=>{
+$('#placeDemo').onclick=()=>{recordOrder();
   const L=LOCS[$('#mLoc').value],no='AGG-'+Math.floor(1000+Math.random()*9000),T=totals(),first=Object.values(cart)[0];
   const order={no,loc:L.name,total:T.total,items:count(),t:Date.now(),name:$('#oName').value.trim(),pickup:$('#oTime').value};
   store.set('order',order);store.set('last',cart);
